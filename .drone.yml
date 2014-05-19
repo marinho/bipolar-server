@@ -1,0 +1,5 @@
+image: bradrydzewski/python:2.7 
+script:
+    - sudo apt-get install -y python-pip
+    - sudo apt-get remove -y python-simplejson
+    - ./drone_test.sh

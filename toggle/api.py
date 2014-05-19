@@ -122,6 +122,20 @@ class PermissionsResource(Resource):
     def detail_uri_kwargs(self, bundle_or_obj):
         return {}
 
+    def get_list(self, request, **kwargs):
+        base_bundle = self.build_bundle(request=request)
+        account = base_bundle.request.account
+
+        if request.GET.get("qualifier", None):
+            qualifier = account.qualifiers.get(name=request.GET["qualifier"])
+            permissions = {
+                qualifier.name: qualifier.format_all_permissions(),
+                }
+        else:
+            permissions = account.format_all_permissions()["permissions"]
+
+        return self.create_response(request, {"permissions": permissions})
+
     def dehydrate_permissions(self, bundle):
         return bundle.request.account.format_all_permissions()["permissions"]
 

@@ -269,6 +269,10 @@ class TestApi(ResourceTestCase):
             account=self.account,
             name="Master",
             )
+        self.qualifier2 = Qualifier.objects.create(
+            account=self.account,
+            name="Basic",
+            )
 
     def tearDown(self):
         Account.objects.all().delete()
@@ -353,7 +357,7 @@ class TestApi(ResourceTestCase):
             authentication=self.get_credentials())
         self.assertHttpOK(resp)
         data = json.loads(resp.content)
-        self.assertEqual(len(data["objects"]), 2)
+        self.assertEqual(len(data["objects"]), 3)
 
         # Delete
         resp = self.api_client.delete('/api/v1/qualifier/premium/', format='json',
@@ -374,20 +378,54 @@ class TestApi(ResourceTestCase):
             }, authentication=self.get_credentials())
         self.assertHttpCreated(resp)
         self.assertEqual(json.loads(resp.content), {
-            "permissions": {
-                "master": {
-                    "crm.business": True,
-                    "crm.person": False,
-                    "crm.locations_limit": 12,
+            u'resource_uri': u'',
+            u'permissions': {
+                u'master': {
+                    u'crm.business': True,
+                    u'crm.person': False,
+                    u'crm.locations_limit': 12,
+                    },
+                u'basic': {
+                    u'crm.business': False,
+                    u'crm.person': False,
+                    u'crm.locations_limit': 0,
                     },
                 },
-            "resource_uri": "",
             })
         self.assertTrue(self.qualifier1.get_permission("crm.business"))
         self.assertFalse(self.qualifier1.get_permission("crm.person"))
         self.assertEqual(self.qualifier1.get_permission_value("crm.locations_limit"), 12)
 
-        # TODO Get a specific one
-        # TODO Get all permissions for account
-        # TODO Get all permissions for qualifier
+        # Get all permissions for account
+        resp = self.api_client.get('/api/v1/permissions/', format='json',
+            authentication=self.get_credentials())
+        self.assertHttpOK(resp)
+        self.assertEqual(json.loads(resp.content), {
+            'permissions': {
+                'master': {
+                    'crm.business': True,
+                    'crm.person': False,
+                    'crm.locations_limit': 12,
+                    },
+                u'basic': {
+                    u'crm.business': False,
+                    u'crm.person': False,
+                    u'crm.locations_limit': 0,
+                    },
+                },
+            })
+
+        # Get all permissions for qualifier
+        resp = self.api_client.get('/api/v1/permissions/?qualifier=master', format='json',
+            authentication=self.get_credentials())
+        self.assertHttpOK(resp)
+        self.assertEqual(json.loads(resp.content), {
+            'permissions': {
+                'master': {
+                    'crm.business': True,
+                    'crm.person': False,
+                    'crm.locations_limit': 12,
+                    },
+                },
+            })
 
