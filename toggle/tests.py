@@ -201,7 +201,7 @@ class TestWebhook(TestCase):
             }})
 
     @responses.activate
-    def test_url(self):
+    def disabled_for_drone_test_url(self):
         responses.add(
             method="POST",
             url="http://url.test/?arg1=123",
