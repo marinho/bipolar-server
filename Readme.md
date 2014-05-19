@@ -1,5 +1,7 @@
 # Bipolar Feature Toggle System
 
+[![Build Status](https://drone.io/github.com/TDispatch/bipolar/status.png)](https://drone.io/github.com/TDispatch/bipolar/latest)
+
 ## Overview
 
 **Bipolar** is a feature toggle micro service, a bit similar to **django-gargoyle**,
