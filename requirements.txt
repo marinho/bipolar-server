@@ -1,0 +1,8 @@
+django
+south
+jellyfish
+pusher
+django-tastypie
+requests
+responses
+coverage
