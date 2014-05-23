@@ -15,9 +15,9 @@ class PusherWebhook(BaseWebhook):
 
     def send(self, data, webhook):
         p = pusher.Pusher(
-            app_id=webhook.param1,
-            key=webhook.param2,
-            secret=webhook.param3,
+            app_id=str(webhook.param1),
+            key=str(webhook.param2),
+            secret=str(webhook.param3),
             )
 
         # For mocking during tests
@@ -28,7 +28,7 @@ class PusherWebhook(BaseWebhook):
             PusherWebhook._test["pool"].append(data)
             return
 
-        p[webhook.param4].trigger(webhook.param5, data)
+        p[str(webhook.param4)].trigger(str(webhook.param5), data)
 
 
 class UrlWebhook(BaseWebhook):
