@@ -13,7 +13,7 @@ class Account(models.Model):
     api_key = models.CharField(max_length=32, unique=True, blank=True)
 
     def __unicode__(self):
-        return self.name
+        return self.shortcode
 
     def save(self, *args, **kwargs):
         if not self.shortcode:
@@ -93,7 +93,7 @@ class Feature(models.Model):
     limit_permission = models.IntegerField(null=True, blank=True)
 
     def __unicode__(self):
-        return self.name
+        return "%s / %s" % (self.account.shortcode, self.name)
 
     def save(self, *args, **kwargs):
         self.name = self.name.lower()
@@ -106,7 +106,7 @@ class Qualifier(models.Model):
     creation = models.DateTimeField(auto_now_add=True, db_index=True)
 
     def __unicode__(self):
-        return self.name
+        return "%s / %s" % (self.account.shortcode, self.name)
 
     def save(self, *args, **kwargs):
         self.name = self.name.lower()
