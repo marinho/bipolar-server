@@ -181,9 +181,15 @@ class Qualifier(models.Model):
                 return 0
 
         if feature.permission_type == Feature.TYPE_BOOLEAN:
-            return permission.boolean_permission
+            if permission.boolean_permission is None:
+                return bool(feature.boolean_permission)
+            else:
+                return permission.boolean_permission
         elif feature.permission_type == Feature.TYPE_LIMIT:
-            return permission.limit_permission
+            if permission.limit_permission is None:
+                return feature.limit_permission or 0
+            else:
+                return permission.limit_permission
 
         return False
 
