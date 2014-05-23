@@ -166,20 +166,23 @@ class Qualifier(models.Model):
         # Get feature
         feature = self.get_feature_by_name(feature)
 
+        # For permission level "all"
         if feature.permission_level == Feature.LEVEL_ALL:
             if feature.permission_type == Feature.TYPE_BOOLEAN:
                 return bool(feature.boolean_permission)
             elif feature.permission_type == Feature.TYPE_LIMIT:
                 return feature.limit_permission
 
+        # For permission level "qualifier" but non-existing permission
         try:
             permission = self.permissions.get(feature=feature)
         except QualifierPermission.DoesNotExist:
             if feature.permission_type == Feature.TYPE_BOOLEAN:
-                return False
+                return bool(feature.boolean_permission)
             elif feature.permission_type == Feature.TYPE_LIMIT:
-                return 0
+                return feature.limit_permission
 
+        # For permission level "qualifier" with a valid permission
         if feature.permission_type == Feature.TYPE_BOOLEAN:
             if permission.boolean_permission is None:
                 return bool(feature.boolean_permission)
