@@ -86,3 +86,7 @@ STATIC_URL = '/static/'
 TASTYPIE_DEFAULT_FORMATS = ['json']
 API_LIMIT_PER_PAGE = 10
 
+try:
+    from local_settings import *
+except ImportError:
+    pass
