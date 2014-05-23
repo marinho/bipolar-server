@@ -115,7 +115,7 @@ class Qualifier(models.Model):
     def get_feature_by_name(self, feature):
         # Get feature by name
         if isinstance(feature, basestring):
-            feature = Feature.objects.get(name=feature)
+            feature = self.account.features.get(name=feature)
 
         # Valid feature argument
         if not isinstance(feature, Feature):
