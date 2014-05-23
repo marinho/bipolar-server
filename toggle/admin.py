@@ -1,6 +1,10 @@
 from django.contrib import admin
 
-from toggle.models import Account, Feature, Qualifier, QualifierPermission
+from toggle.models import Account
+from toggle.models import Feature
+from toggle.models import Qualifier
+from toggle.models import QualifierPermission
+from toggle.models import Webhook
 
 
 class InlineAccountFeature(admin.TabularInline):
@@ -8,9 +12,14 @@ class InlineAccountFeature(admin.TabularInline):
     extra = 0
 
 
+class InlineAccountWebhook(admin.TabularInline):
+    model = Webhook
+    extra = 0
+
+
 class AdminAccount(admin.ModelAdmin):
     search_fields = ("name",)
-    inlines = [InlineAccountFeature]
+    inlines = [InlineAccountFeature, InlineAccountWebhook]
     list_display = ("name", "shortcode", "api_key")
 
 
