@@ -171,7 +171,7 @@ class Qualifier(models.Model):
             if feature.permission_type == Feature.TYPE_BOOLEAN:
                 return bool(feature.boolean_permission)
             elif feature.permission_type == Feature.TYPE_LIMIT:
-                return feature.limit_permission
+                return feature.limit_permission or 0
 
         # For permission level "qualifier" but non-existing permission
         try:
@@ -180,7 +180,7 @@ class Qualifier(models.Model):
             if feature.permission_type == Feature.TYPE_BOOLEAN:
                 return bool(feature.boolean_permission)
             elif feature.permission_type == Feature.TYPE_LIMIT:
-                return feature.limit_permission
+                return feature.limit_permission or 0
 
         # For permission level "qualifier" with a valid permission
         if feature.permission_type == Feature.TYPE_BOOLEAN:

@@ -173,7 +173,7 @@ class TestWebhook(TestCase):
             boolean_permission=True,
             )
         self.assertEqual(len(PusherWebhook._test["pool"]), 7)
-        self.assertEqual(PusherWebhook._test["pool"][-1]["permissions"], {u'master': {u'crm.person': False}})
+        self.assertEqual(PusherWebhook._test["pool"][-1]["permissions"], {u'master': {u'crm.person': True}})
 
         # ... level "all" with permission value
         self.feature2.permission_level = Feature.LEVEL_ALL
@@ -189,7 +189,7 @@ class TestWebhook(TestCase):
             )
         self.assertEqual(len(PusherWebhook._test["pool"]), 9)
         self.assertEqual(PusherWebhook._test["pool"][-1]["permissions"], {u'master': {
-            u'crm.locations_limit': 0, 
+            u'crm.locations_limit': 10, 
             u'crm.person': True,
             }})
 
