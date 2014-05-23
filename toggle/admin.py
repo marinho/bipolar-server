@@ -11,6 +11,7 @@ class InlineAccountFeature(admin.TabularInline):
 class AdminAccount(admin.ModelAdmin):
     search_fields = ("name",)
     inlines = [InlineAccountFeature]
+    list_display = ("name", "shortcode", "api_key")
 
 
 class InlineQualifierPermission(admin.TabularInline):
@@ -22,6 +23,7 @@ class AdminQualifier(admin.ModelAdmin):
     search_fields = ("name",)
     list_filter = ("account",)
     inlines = [InlineQualifierPermission]
+    list_display = ("name", "account")
 
 
 admin.site.register(Account, AdminAccount)
