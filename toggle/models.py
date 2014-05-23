@@ -49,6 +49,15 @@ class Account(models.Model):
         for webhook in self.webhooks.all():
             send_to_webhook(data, webhook)
 
+    def get_default_permissions(self):
+        permissions = {}
+        for feature in self.features.order_by("name"):
+            if feature.permission_type == Feature.TYPE_BOOLEAN:
+                permissions[feature.name] = bool(feature.boolean_permission)
+            elif feature.permission_type == Feature.TYPE_LIMIT:
+                permissions[feature.name] = feature.limit_permission or 0
+        return permissions
+
 
 class Feature(models.Model):
     TYPE_BOOLEAN = "boolean"

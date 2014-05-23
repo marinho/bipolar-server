@@ -127,10 +127,13 @@ class PermissionsResource(Resource):
         account = base_bundle.request.account
 
         if request.GET.get("qualifier", None):
-            qualifier = account.qualifiers.get(name=request.GET["qualifier"])
-            permissions = {
-                qualifier.name: qualifier.format_all_permissions(),
-                }
+            try:
+                qualifier = account.qualifiers.get(name=request.GET["qualifier"])
+                permissions = {
+                    qualifier.name: qualifier.format_all_permissions(),
+                    }
+            except Qualifier.DoesNotExist:
+                permissions = {request.GET["qualifier"]: account.get_default_permissions()}
         else:
             permissions = account.format_all_permissions()["permissions"]
 
