@@ -60,6 +60,11 @@ class Account(models.Model):
 
 
 class Feature(models.Model):
+    class Meta:
+        unique_together = (
+            ("account", "name"),
+            )
+
     TYPE_BOOLEAN = "boolean"
     TYPE_LIMIT = "limit"
     TYPES = (
@@ -101,6 +106,11 @@ class Feature(models.Model):
 
 
 class Qualifier(models.Model):
+    class Meta:
+        unique_together = (
+            ("account", "name"),
+            )
+
     account = models.ForeignKey("Account", related_name="qualifiers")
     name = models.CharField(max_length=50)
     creation = models.DateTimeField(auto_now_add=True, db_index=True)
