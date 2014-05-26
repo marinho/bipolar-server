@@ -1,7 +1,9 @@
 import random
 import jellyfish
+import re
 from django.db import models
 from django.utils.crypto import get_random_string
+from django.core.exceptions import ValidationError
 
 from webhooks import send_to_webhook
 
@@ -79,6 +81,8 @@ class Feature(models.Model):
         (LEVEL_QUALIFIER, "Qualifier"),
         )
 
+    EXP_NAME_VALIDATION = re.compile("^[a-zA-Z]+[\w_]*$")
+
     account = models.ForeignKey("Account", related_name="features")
     name = models.CharField(max_length=50)
     creation = models.DateTimeField(auto_now_add=True, db_index=True)
@@ -103,6 +107,12 @@ class Feature(models.Model):
     def save(self, *args, **kwargs):
         self.name = self.name.lower()
         return super(Feature, self).save(*args, **kwargs)
+
+    def clean(self):
+        # Name must contain letters, numbers and underscores and start with a letter
+        name_match = self.EXP_NAME_VALIDATION.match(self.name)
+        if not name_match:
+            raise ValidationError("Name must start with a letter and contain only letters, numbers and underscore.")
 
 
 class Qualifier(models.Model):

@@ -4,6 +4,7 @@ from tastypie import fields
 from tastypie.authorization import Authorization
 from tastypie.authentication import BasicAuthentication
 from tastypie.authentication import Authentication
+from tastypie.validation import Validation
 
 from toggle.models import Account, Feature, Qualifier
 
@@ -41,6 +42,20 @@ class AccountBasedResource(ModelResource):
         return qs
 
 
+class FeatureValidation(Validation):
+    def is_valid(self, bundle, request=None):
+        if not bundle.data:
+            return {'__all__': 'Not quite what I had in mind.'}
+
+        errors = {}
+
+        name_match = Feature.EXP_NAME_VALIDATION.match(bundle.data["name"])
+        if not name_match:
+            errors["name"] = ["Name must start with a letter and contain only letters, numbers and underscore."]
+
+        return errors
+
+
 class FeatureResource(AccountBasedResource):
     class Meta:
         queryset = Feature.objects.all()
@@ -52,6 +67,7 @@ class FeatureResource(AccountBasedResource):
         authentication = AccountAuthentication()
         authorization = Authorization()
         always_return_data = True
+        validation = FeatureValidation()
 
     def prepend_urls(self):
         return [

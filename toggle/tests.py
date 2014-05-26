@@ -3,6 +3,7 @@ import json
 from datetime import datetime
 from django.test import TestCase
 from django.test.client import Client
+from django.core.exceptions import ValidationError
 from tastypie.test import ResourceTestCase
 
 from toggle.models import Account, Feature, Qualifier
@@ -32,12 +33,22 @@ class TestFeature(TestCase):
     def tearDown(self):
         Account.objects.all().delete()
 
-    def test_basic(self):
-        feature = Feature.objects.create(
+    def test_basic_validation(self):
+        feature = Feature(
             account=self.account,
             name="Crm.Business",
             )
-        self.assertEqual(feature.name, "crm.business")
+        try:
+            feature.full_clean()
+        except ValidationError as e:
+            self.assertEqual(e.message_dict, {'__all__': [u'Name must start with a letter and contain only letters, numbers and underscore.']})
+
+    def test_basic(self):
+        feature = Feature.objects.create(
+            account=self.account,
+            name="Crm_Business",
+            )
+        self.assertEqual(feature.name, "crm_business")
 
 
 class TestQualifier(TestCase):
@@ -46,15 +57,15 @@ class TestQualifier(TestCase):
             name="T Dispatch",
             )
         self.feature1 = self.account.features.create(
-            name="crm.business",
+            name="crm_business",
             permission_type=Feature.TYPE_BOOLEAN,
             )
         self.feature2 = self.account.features.create(
-            name="crm.person",
+            name="crm_person",
             permission_type=Feature.TYPE_BOOLEAN,
             )
         self.feature3 = self.account.features.create(
-            name="crm.locations_limit",
+            name="crm_locations_limit",
             permission_type=Feature.TYPE_LIMIT,
             )
 
@@ -75,34 +86,34 @@ class TestQualifier(TestCase):
             )
 
         # Setting value permissions
-        qualifier.set_permission("crm.business", True)
-        qualifier.set_permission("crm.person", False)
-        qualifier.set_permission("crm.locations_limit", 5)
+        qualifier.set_permission("crm_business", True)
+        qualifier.set_permission("crm_person", False)
+        qualifier.set_permission("crm_locations_limit", 5)
 
         # Getting valid permissions
-        self.assertTrue(qualifier.get_permission("crm.business"))
-        self.assertFalse(qualifier.get_permission("crm.person"))
-        self.assertTrue(qualifier.get_permission("crm.locations_limit", 3))
-        self.assertFalse(qualifier.get_permission("crm.locations_limit", 10))
+        self.assertTrue(qualifier.get_permission("crm_business"))
+        self.assertFalse(qualifier.get_permission("crm_person"))
+        self.assertTrue(qualifier.get_permission("crm_locations_limit", 3))
+        self.assertFalse(qualifier.get_permission("crm_locations_limit", 10))
 
         # Existing permission
-        qualifier.set_permission("crm.locations_limit", 12)
-        self.assertTrue(qualifier.get_permission("crm.locations_limit", 10))
+        qualifier.set_permission("crm_locations_limit", 12)
+        self.assertTrue(qualifier.get_permission("crm_locations_limit", 10))
 
         # Setting invalid permissions
         try:
-            qualifier.set_permission("crm.business", "mario")
+            qualifier.set_permission("crm_business", "mario")
         except TypeError as e:
             self.assertEqual(str(e), "Boolean feature requires boolean value.")
 
         try:
-            qualifier.set_permission("crm.locations_limit", None)
+            qualifier.set_permission("crm_locations_limit", None)
         except TypeError as e:
             self.assertEqual(str(e), "Limit feature requires integer value.")
 
         # Getting invalid permissions
         try:
-            self.assertFalse(qualifier.get_permission("crm.permission"))
+            self.assertFalse(qualifier.get_permission("crm_permission"))
         except Exception as e:
             self.assertTrue(isinstance(e, Feature.DoesNotExist))
 
@@ -130,7 +141,7 @@ class TestWebhook(TestCase):
         # Pusher is called when feature is changed
         # ... created
         feature1 = self.account.features.create(
-            name="crm.business",
+            name="crm_business",
             permission_type=Feature.TYPE_BOOLEAN,
             )
         self.assertEqual(len(PusherWebhook._test["pool"]), 1)
@@ -148,18 +159,18 @@ class TestWebhook(TestCase):
             name="Master",
             )
         self.assertEqual(len(PusherWebhook._test["pool"]), 2)
-        self.assertEqual(PusherWebhook._test["pool"][-1]["permissions"], {u'master': {u'crm.business': False}})
+        self.assertEqual(PusherWebhook._test["pool"][-1]["permissions"], {u'master': {u'crm_business': False}})
 
         # Qualifier setting permission
-        qualifier.set_permission("crm.business", True)
+        qualifier.set_permission("crm_business", True)
         self.assertEqual(len(PusherWebhook._test["pool"]), 3)
-        self.assertEqual(PusherWebhook._test["pool"][-1]["permissions"], {u'master': {u'crm.business': True}})
+        self.assertEqual(PusherWebhook._test["pool"][-1]["permissions"], {u'master': {u'crm_business': True}})
 
         # ... updated and permission level "all" (instead of "per qualifier")
         feature1.permission_level = Feature.LEVEL_ALL
         feature1.save()
         self.assertEqual(len(PusherWebhook._test["pool"]), 4)
-        self.assertEqual(PusherWebhook._test["pool"][-1]["permissions"], {u'master': {u'crm.business': False}})
+        self.assertEqual(PusherWebhook._test["pool"][-1]["permissions"], {u'master': {u'crm_business': False}})
 
         # ... deleted
         feature1.delete()
@@ -168,36 +179,36 @@ class TestWebhook(TestCase):
 
         # New feature - testing level all permission value
         self.feature2 = self.account.features.create(
-            name="crm.person",
+            name="crm_person",
             permission_type=Feature.TYPE_BOOLEAN,
             boolean_permission=True,
             )
         self.assertEqual(len(PusherWebhook._test["pool"]), 7)
-        self.assertEqual(PusherWebhook._test["pool"][-1]["permissions"], {u'master': {u'crm.person': True}})
+        self.assertEqual(PusherWebhook._test["pool"][-1]["permissions"], {u'master': {u'crm_person': True}})
 
         # ... level "all" with permission value
         self.feature2.permission_level = Feature.LEVEL_ALL
         self.feature2.save()
         self.assertEqual(len(PusherWebhook._test["pool"]), 8)
-        self.assertEqual(PusherWebhook._test["pool"][-1]["permissions"], {u'master': {u'crm.person': True}})
+        self.assertEqual(PusherWebhook._test["pool"][-1]["permissions"], {u'master': {u'crm_person': True}})
 
         # New feature - type limit
         self.feature3 = self.account.features.create(
-            name="crm.locations_limit",
+            name="crm_locations_limit",
             permission_type=Feature.TYPE_LIMIT,
             limit_permission=10,
             )
         self.assertEqual(len(PusherWebhook._test["pool"]), 9)
         self.assertEqual(PusherWebhook._test["pool"][-1]["permissions"], {u'master': {
-            u'crm.locations_limit': 10, 
-            u'crm.person': True,
+            u'crm_locations_limit': 10, 
+            u'crm_person': True,
             }})
 
-        qualifier.set_permission("crm.locations_limit", 5)
+        qualifier.set_permission("crm_locations_limit", 5)
         self.assertEqual(len(PusherWebhook._test["pool"]), 10)
         self.assertEqual(PusherWebhook._test["pool"][-1]["permissions"], {u'master': {
-            u'crm.locations_limit': 5, 
-            u'crm.person': True,
+            u'crm_locations_limit': 5, 
+            u'crm_person': True,
             }})
 
     @responses.activate
@@ -217,7 +228,7 @@ class TestWebhook(TestCase):
         # Pusher is called when feature is changed
         # ... created
         feature1 = self.account.features.create(
-            name="crm.business",
+            name="crm_business",
             permission_type=Feature.TYPE_BOOLEAN,
             permission_level=Feature.LEVEL_ALL,
             boolean_permission=True
@@ -254,15 +265,15 @@ class TestApi(ResourceTestCase):
             name="T Dispatch",
             )
         self.feature1 = self.account.features.create(
-            name="crm.business",
+            name="crm_business",
             permission_type=Feature.TYPE_BOOLEAN,
             )
         self.feature2 = self.account.features.create(
-            name="crm.person",
+            name="crm_person",
             permission_type=Feature.TYPE_BOOLEAN,
             )
         self.feature3 = self.account.features.create(
-            name="crm.locations_limit",
+            name="crm_locations_limit",
             permission_type=Feature.TYPE_LIMIT,
             )
         self.qualifier1 = Qualifier.objects.create(
@@ -288,17 +299,24 @@ class TestApi(ResourceTestCase):
         resp = self.api_client.get("/api/v1/feature/", authentication="ApiKey mario")
         self.assertHttpUnauthorized(resp)
 
-    def test_features(self):
+    def test_features_invalid_name(self):
         # Add
         resp = self.api_client.post('/api/v1/feature/', format='json', data={
             "name": "crm.EXPORT_CSV",
             }, authentication=self.get_credentials())
+        self.assertHttpBadRequest(resp)
+
+    def test_features(self):
+        # Add
+        resp = self.api_client.post('/api/v1/feature/', format='json', data={
+            "name": "crm_EXPORT_CSV",
+            }, authentication=self.get_credentials())
         self.assertHttpCreated(resp)
-        feature = Feature.objects.get(name="crm.export_csv")
+        feature = Feature.objects.get(name="crm_export_csv")
         self.assertEqual(feature.account, self.account)
 
         # Get
-        resp = self.api_client.get('/api/v1/feature/crm.export_csv/', format='json',
+        resp = self.api_client.get('/api/v1/feature/crm_export_csv/', format='json',
                 authentication=self.get_credentials())
         self.assertHttpOK(resp)
         data = json.loads(resp.content)
@@ -309,11 +327,11 @@ class TestApi(ResourceTestCase):
         self.assertEqual(data["permission_level"], "qualifier")
 
         # Update
-        resp = self.api_client.put('/api/v1/feature/crm.export_csv/', format='json', data={
+        resp = self.api_client.put('/api/v1/feature/crm_export_csv/', format='json', data={
             "permission_level": "all",
             }, authentication=self.get_credentials())
         self.assertHttpOK(resp)
-        self.assertEqual(self.account.features.get(name="crm.export_csv").permission_level, "all")
+        self.assertEqual(self.account.features.get(name="crm_export_csv").permission_level, "all")
 
         # List
         resp = self.api_client.get('/api/v1/feature/', format='json',
@@ -323,10 +341,10 @@ class TestApi(ResourceTestCase):
         self.assertEqual(len(data["objects"]), 4)
 
         # Delete
-        resp = self.api_client.delete('/api/v1/feature/crm.export_csv/', format='json',
+        resp = self.api_client.delete('/api/v1/feature/crm_export_csv/', format='json',
             authentication=self.get_credentials())
         self.assertEqual(resp.status_code, 204)
-        self.assertEqual(self.account.features.filter(name="crm.export_csv").count(), 0)
+        self.assertEqual(self.account.features.filter(name="crm_export_csv").count(), 0)
 
     def test_qualifiers(self):
         # Add
@@ -370,9 +388,9 @@ class TestApi(ResourceTestCase):
         resp = self.api_client.post('/api/v1/permissions/', format='json', data={
             "permissions": {
                 "master": {
-                    "crm.business": True,
-                    "crm.person": False,
-                    "crm.locations_limit": 12,
+                    "crm_business": True,
+                    "crm_person": False,
+                    "crm_locations_limit": 12,
                     },
                 },
             }, authentication=self.get_credentials())
@@ -381,20 +399,20 @@ class TestApi(ResourceTestCase):
             u'resource_uri': u'',
             u'permissions': {
                 u'master': {
-                    u'crm.business': True,
-                    u'crm.person': False,
-                    u'crm.locations_limit': 12,
+                    u'crm_business': True,
+                    u'crm_person': False,
+                    u'crm_locations_limit': 12,
                     },
                 u'basic': {
-                    u'crm.business': False,
-                    u'crm.person': False,
-                    u'crm.locations_limit': 0,
+                    u'crm_business': False,
+                    u'crm_person': False,
+                    u'crm_locations_limit': 0,
                     },
                 },
             })
-        self.assertTrue(self.qualifier1.get_permission("crm.business"))
-        self.assertFalse(self.qualifier1.get_permission("crm.person"))
-        self.assertEqual(self.qualifier1.get_permission_value("crm.locations_limit"), 12)
+        self.assertTrue(self.qualifier1.get_permission("crm_business"))
+        self.assertFalse(self.qualifier1.get_permission("crm_person"))
+        self.assertEqual(self.qualifier1.get_permission_value("crm_locations_limit"), 12)
 
         # Get all permissions for account
         resp = self.api_client.get('/api/v1/permissions/', format='json',
@@ -403,14 +421,14 @@ class TestApi(ResourceTestCase):
         self.assertEqual(json.loads(resp.content), {
             'permissions': {
                 'master': {
-                    'crm.business': True,
-                    'crm.person': False,
-                    'crm.locations_limit': 12,
+                    'crm_business': True,
+                    'crm_person': False,
+                    'crm_locations_limit': 12,
                     },
                 u'basic': {
-                    u'crm.business': False,
-                    u'crm.person': False,
-                    u'crm.locations_limit': 0,
+                    u'crm_business': False,
+                    u'crm_person': False,
+                    u'crm_locations_limit': 0,
                     },
                 },
             })
@@ -422,9 +440,9 @@ class TestApi(ResourceTestCase):
         self.assertEqual(json.loads(resp.content), {
             'permissions': {
                 'master': {
-                    'crm.business': True,
-                    'crm.person': False,
-                    'crm.locations_limit': 12,
+                    'crm_business': True,
+                    'crm_person': False,
+                    'crm_locations_limit': 12,
                     },
                 },
             })
