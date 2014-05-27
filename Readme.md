@@ -65,4 +65,4 @@ Free and Open Source software based on **Gnu Public License v3**.
 ## Author
 
 **Marinho Brandao** <name at gmail.com>
-Releasd at first for **T Dispatch** - https://tdispatch.com
+Released at first for **T Dispatch** - https://tdispatch.com
