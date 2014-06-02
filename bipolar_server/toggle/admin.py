@@ -1,10 +1,10 @@
 from django.contrib import admin
 
-from toggle.models import Account
-from toggle.models import Feature
-from toggle.models import Qualifier
-from toggle.models import QualifierPermission
-from toggle.models import Webhook
+from models import Account
+from models import Feature
+from models import Qualifier
+from models import QualifierPermission
+from models import Webhook
 
 
 class InlineAccountFeature(admin.TabularInline):

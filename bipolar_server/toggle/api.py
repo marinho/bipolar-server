@@ -6,7 +6,7 @@ from tastypie.authentication import BasicAuthentication
 from tastypie.authentication import Authentication
 from tastypie.validation import Validation
 
-from toggle.models import Account, Feature, Qualifier
+from models import Account, Feature, Qualifier
 
 
 class AccountAuthentication(Authentication):

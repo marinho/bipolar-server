@@ -6,8 +6,8 @@ from django.test.client import Client
 from django.core.exceptions import ValidationError
 from tastypie.test import ResourceTestCase
 
-from toggle.models import Account, Feature, Qualifier
-from toggle.webhooks import PusherWebhook, UrlWebhook
+from models import Account, Feature, Qualifier
+from webhooks import PusherWebhook, UrlWebhook
 
 
 class TestAccount(TestCase):

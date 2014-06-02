@@ -4,3 +4,7 @@ env/
 *.pyc
 .*.swo
 .*.swp
+bipolar-manage
+bipolar_server.egg-info/
+build/
+dist/

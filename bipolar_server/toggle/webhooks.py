@@ -1,6 +1,10 @@
-import pusher
 import requests
 import json
+
+try:
+    import pusher
+except ImportError:
+    pusher = None
 
 
 class BaseWebhook(object):
@@ -12,6 +16,10 @@ class PusherWebhook(BaseWebhook):
         "mode": False,
         "pool": None,
         }
+
+    def __init__(self):
+        if pusher is None:
+            raise ImportError("pusher package was not found.")
 
     def send(self, data, webhook):
         p = pusher.Pusher(

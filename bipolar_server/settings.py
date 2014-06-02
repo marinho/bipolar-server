@@ -1,5 +1,5 @@
 """
-Django settings for project project.
+Django settings for project bipolar_server.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/1.6/topics/settings/
@@ -37,7 +37,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "tastypie",
-    "toggle",
+    "bipolar_server.toggle",
 )
 
 MIDDLEWARE_CLASSES = (
@@ -49,9 +49,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'project.urls'
+ROOT_URLCONF = 'bipolar_server.urls'
 
-WSGI_APPLICATION = 'project.wsgi.application'
+WSGI_APPLICATION = 'bipolar_server.wsgi.application'
 
 
 # Database

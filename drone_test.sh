@@ -1,7 +1,7 @@
 #!/bin/sh
-export DJANGO_SETTINGS_MODULE=project.settings
+export DJANGO_SETTINGS_MODULE=bipolar_server.settings
 coverage run --source='.' manage.py test
-coverage report -m --fail-under=90 toggle/*.py project/*.py
+coverage report -m --fail-under=90 bipolar_server/toggle/*.py bipolar_server/*.py
 OUT=$?
 
 STATUS="failed"
