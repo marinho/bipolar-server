@@ -1,0 +1,75 @@
+{% extends "base_logged.html" %}
+
+{% block content %}
+<div class="">
+    <h1><a href="{% url "account_view" account.shortcode %}" rel="prev">{{ account.shortcode }}</a> /
+        {% if feature %}{{ feature.name }}{% else %}New Feature{% endif %}</h1>
+    <hr/>
+
+    <form class="row" method="post">
+        {% csrf_token %}
+        <div class="row">
+            <div class="one third padded {% if form.name.errors %}invalid{% endif %}">
+                <label for="name">Type {% if form.type.errors %}<span class="error">{{ form.type.errors.0 }}</span>{% endif %}</label>
+                {{ form.type }}
+            </div>
+            <div class="one third padded">
+                <label>&nbsp;</label>
+                {{ form.is_active }} Is Active
+            </div>
+        </div>
+        <div class="row">
+            <div class="one third padded {% if form.param1.errors %}invalid{% endif %}">
+                <label for="param1"><span class="label">Param 1</span>
+                    {% if form.param1.errors %}<span class="error">{{ form.param1.errors.0 }}</span>{% endif %}</label>
+                {{ form.param1 }}
+            </div>
+            <div class="one third padded {% if form.param2.errors %}invalid{% endif %}">
+                <label for="param2"><span class="label">Param 2</span>
+                    {% if form.param2.errors %}<span class="error">{{ form.param2.errors.0 }}</span>{% endif %}</label>
+                {{ form.param2 }}
+            </div>
+            <div class="one third padded {% if form.param3.errors %}invalid{% endif %}">
+                <label for="param3"><span class="label">Param 3</span>
+                    {% if form.param3.errors %}<span class="error">{{ form.param3.errors.0 }}</span>{% endif %}</label>
+                {{ form.param3 }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="one third padded {% if form.param4.errors %}invalid{% endif %}">
+                <label for="param4"><span class="label">Param 4</span>
+                    {% if form.param4.errors %}<span class="error">{{ form.param4.errors.0 }}</span>{% endif %}</label>
+                {{ form.param4 }}
+            </div>
+            <div class="one third padded {% if form.param5.errors %}invalid{% endif %}">
+                <label for="param5"><span class="label">Param 5</span>
+                    {% if form.param5.errors %}<span class="error">{{ form.param5.errors.0 }}</span>{% endif %}</label>
+                {{ form.param5 }}
+            </div>
+        </div>
+        <div class="row padded">
+            <button type="submit">Save Webhook</button>
+        </div>
+    </form>
+</div>
+{% endblock content %}
+
+{% block body_post_scripts %}
+<script>
+$(document).ready(function(){
+    $("#id_type").change(function(){
+        if ($(this).val() == "pusher") {
+            $("#id_param1").parent().find("label>.label").html("Pusher App ID");
+            $("#id_param2").parent().find("label>.label").html("Pusher Key");
+            $("#id_param3").parent().find("label>.label").html("Pusher Secret");
+            $("#id_param4").parent().find("label>.label").html("Pusher Channel");
+            $("#id_param5").parent().find("label>.label").html("Pusher Event");
+            $("#id_param2, #id_param3, #id_param4, #id_param5").parent().show();
+        } else if ($(this).val() == "url") {
+            $("#id_param1").parent().find("label>.label").html("URL");
+            $("#id_param2, #id_param3, #id_param4, #id_param5").parent().hide();
+        }
+    }).change();
+});
+</script>
+{% endblock body_post_scripts %}

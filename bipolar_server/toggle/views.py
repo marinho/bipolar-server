@@ -8,6 +8,7 @@ from models import Account
 from models import UserAccount
 from forms import AccountForm
 from forms import FeatureForm
+from forms import WebhookForm
 
 
 @login_required
@@ -75,7 +76,7 @@ def qualifier_form(request, shortcode, qualifier_pk=None):
                                      account__shortcode=shortcode)
     account = user_account.account
     # TODO
-    return render(request, "qualifier_add.html")
+    return render(request, "qualifier_form.html")
 
 
 @login_required
@@ -83,6 +84,22 @@ def webhook_form(request, shortcode, webhook_pk=None):
     user_account = get_object_or_404(request.user.accounts.all(),
                                      account__shortcode=shortcode)
     account = user_account.account
-    # TODO
-    return render(request, "webhook_add.html")
+    if webhook_pk:
+        webhook = get_object_or_404(account.webhooks.all(), pk=webhook_pk)
+    else:
+        webhook = None
+
+    if request.method == "POST":
+        form = WebhookForm(request.POST, instance=webhook)
+
+        if form.is_valid():
+            webhook = form.save(commit=False)
+            webhook.account = account
+            webhook.save()
+
+            return HttpResponseRedirect(reverse("account_view", args=(shortcode,)))
+    else:
+        form = WebhookForm(instance=webhook)
+
+    return render(request, "webhook_form.html", {"form": form, "webhook": webhook, "account": account})
 
