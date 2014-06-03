@@ -6,7 +6,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
-    
-    # API resources
     url(r'^api/', include(v1_api.urls)),
+    url(r'', include('social.apps.django_app.urls', namespace='social')),
+    url(r'', include("bipolar_server.toggle.urls")),
 )

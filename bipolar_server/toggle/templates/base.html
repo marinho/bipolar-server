@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+    <head>
+        <!-- Modernizr -->
+        <script src="/static/js/libs/modernizr-2.6.2.min.js"></script>
+        <!-- framework css -->
+        <!--[if gt IE 9]><!-->
+        <link type="text/css" rel="stylesheet" href="/static/css/groundwork.css">
+        <!--<![endif]-->
+        <!--[if lte IE 9]>
+        <link type="text/css" rel="stylesheet" href="/static/css/groundwork-core.css">
+        <link type="text/css" rel="stylesheet" href="/static/css/groundwork-type.css">
+        <link type="text/css" rel="stylesheet" href="/static/css/groundwork-ui.css">
+        <link type="text/css" rel="stylesheet" href="/static/css/groundwork-anim.css">
+        <link type="text/css" rel="stylesheet" href="/static/css/groundwork-ie.css">
+        <![endif]-->
+    </head>
+
+    <body>
+        <header class="padded">
+            <div class="container">
+                <div class="row">
+                    <div class="one half">
+                        <h1 class="zero museo-slab">Bipolar</h1>
+                        <p class="quicksand">agnostic features toggle micro service</p>
+                    </div>
+                    <div class="one half">
+                        <p class="small double-pad-top no-pad-small-tablet align-right align-left-small-tablet">
+                            <a href="https://github.com/marinho/bipolar" target="_parent">Github Project</a>
+                            - Version {{ BIPOLAR_VERSION }}<br>
+                            by <a href="http://twitter.com/marinhobrandao" target="_blank">Marinho Brandao</a>
+                        </p>
+                    </div>
+                </div>
+
+                {% block navigation %}{% endblock %}
+            </div>
+        </header>
+
+        <div id="content" class="container">
+            {% block content %}{% endblock %}
+        </div>
+
+        <footer class="padded">
+          <div class="container box square">
+            <div class="container padded">
+              <div class="row">
+                <div class="two third padded">
+                  <p>Bipolar is <b>free software</b> released under <b>GPL v3 license</b>.
+                  <a href="mailto:marinho+bipolar@gmail.com">Contact the author</a> if you have any feedback.</p>
+                  <p>Find a bug? Help squash it by <a href="https://github.com/marinho/bipolar-server/issues" target="_blank">filing an issue</a> on Github.</p>
+                  <p>This layout is provided for free by <a href="http://groundworkcss.github.io/">
+                     <b>GroundworkCSS</b></a>, created and maintained by <a href="https://twitter.com/ghepting">Gary Hepting</a></p>
+                </div>
+                <div class="one third padded">
+                  <p class="large padded align-right align-center-small-tablet">
+                    <a href="http://twitter.com/marinhobrandao" target="_blank" title="@marinhobrandao" style="text-decoration:none;" class="large inline gapped"></a>
+                    <a href="http://github.com/marinho/bipolar-server" target="_blank" title="@bipolar-server" style="text-decoration:none;" class="large inline gapped"></a>
+                    <a href="mailto:marinho+bipolar@gmail.com" title="marinho+bipolar@gmail.com" style="text-decoration:none;" class="large inline gapped"></a>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </footer>
+
+        <script type="text/javascript" src="/static/js/libs/jquery-1.10.2.min.js"></script>
+        <script type="text/javascript" src="/static/js/groundwork.all.js"></script>
+    </body>
+</html>

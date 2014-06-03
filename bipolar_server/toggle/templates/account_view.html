@@ -1,0 +1,88 @@
+{% extends "base_logged.html" %}
+
+{% block content %}
+<div class="">
+    <h1>{{ account.name }} ({{ account.shortcode }})</h1>
+    <hr/>
+
+    <div class="equalize row">
+        <div class="one half padded">
+            <h2>Features <a class="small" href="{% url "feature_add" account.shortcode %}" title="Add new Feature"><i class="icon-plus"></i></a></h2>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Type</th>
+                  <th>Level</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for feature in account.features.all %}
+                <tr>
+                  <td><a href="{% url "feature_edit" account.shortcode feature.pk %}">{{ feature.name }}</a></td>
+                  <td>{{ feature.permission_type }}</td>
+                  <td>{{ feature.permission_level }}</td>
+                  <td>{{ feature.permission_value }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+        </div>
+
+        <div class="one fourth padded">
+            <h2>Qualifiers <a class="small" href="{% url "qualifier_add" account.shortcode %}" title="Add new Qualifier"><i class="icon-plus"></i></a></h2>
+
+            <table>
+              <thead>
+                <tr><th>Name</th></tr>
+              </thead>
+              <tbody>
+                {% for qualifier in account.qualifiers.all %}
+                <tr>
+                  <td><a href="{% url "qualifier_edit" account.shortcode qualifier.pk %}">{{ qualifier.name }}</a></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+        </div>
+
+        <div class="one fourth padded">
+            <h2>WebHooks <a class="small" href="{% url "webhook_add" account.shortcode %}" title="Add new WebHook"><i class="icon-plus"></i></a></h2>
+
+            <table>
+              <thead>
+                <tr><th>Name</th></tr>
+              </thead>
+              <tbody>
+                {% for webhook in account.webhooks.all %}
+                <tr>
+                  <td><a href="{% url "webhook_edit" account.shortcode webhook.pk %}">{{ webhook }}</a></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+        </div>
+    </div>
+
+    <hr/>
+
+    <div class="row padded">
+        <h2>Settings</h2>
+
+        <p class="box success">
+            Shortcode: <b>{{ account.shortcode }}</b><br/>
+            API Key: <b>{{ account.api_key }}</b>
+        </p>
+
+        <div class="row">
+            <p class="fourth align-center"><a href="http://github.com/marinho/bipolar-server/wiki/GettingStarted" target="_blank">Getting started</a></p>
+            <p class="fourth align-center"><a href="http://github.com/marinho/bipolar-server/wiki/Clients" target="_blank">Clients</a></p>
+            <p class="fourth align-center"><a href="http://github.com/marinho/bipolar-server/wiki/" target="_blank">Documentation</a></p>
+            <p class="fourth align-center"><a href="http://github.com/marinho/bipolar-server" target="_blank" title="@bipolar-server">GitHub</a></p>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+

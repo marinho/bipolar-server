@@ -6,3 +6,4 @@ django-tastypie
 requests
 responses
 coverage
+python-social-auth

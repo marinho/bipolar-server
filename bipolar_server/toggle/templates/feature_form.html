@@ -1,0 +1,39 @@
+{% extends "base_logged.html" %}
+
+{% block content %}
+<div class="">
+    <h1><a href="{% url "account_view" account.shortcode %}" rel="prev">{{ account.shortcode }}</a> /
+        {% if feature %}{{ feature.name }}{% else %}New Feature{% endif %}</h1>
+    <hr/>
+
+    <form class="row" method="post">
+        {% csrf_token %}
+        <div class="row {% if form.name.errors %}invalid{% endif %}">
+            <div class="three seventh padded">
+                <label for="name">Name {% if form.name.errors %}<span class="error">{{ form.name.errors.0 }}</span>{% endif %}</label>
+                {{ form.name }}
+            </div>
+            <div class="one seventh padded">
+                <label for="permission_level">Level {% if form.permission_level.errors %}<span class="error">{{ form.permission_level.errors.0 }}</span>{% endif %}</label>
+                {{ form.permission_level }}
+            </div>
+            <div class="one seventh padded">
+                <label for="permission_type">Type {% if form.permission_type.errors %}<span class="error">{{ form.permission_type.errors.0 }}</span>{% endif %}</label>
+                {{ form.permission_type }}
+            </div>
+            <div class="one seventh padded">
+                <label for="boolean_permission">Boolean {% if form.boolean_permission.errors %}<span class="error">{{ form.boolean_permission.errors.0 }}</span>{% endif %}</label>
+                {{ form.boolean_permission }}
+            </div>
+            <div class="one seventh padded">
+                <label for="limit_permission">Limit {% if form.limit_permission.errors %}<span class="error">{{ form.limit_permission.errors.0 }}</span>{% endif %}</label>
+                {{ form.limit_permission }}
+            </div>
+        </div>
+        <div class="row padded">
+            <button type="submit">Save Feature</button>
+        </div>
+    </form>
+</div>
+{% endblock content %}
+

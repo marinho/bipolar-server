@@ -1,0 +1,22 @@
+{% extends "base_logged.html" %}
+
+{% block content %}
+<div class="">
+    <h1>{% if account %}{{ account.name }} ({{ account.shortcode }}){% else %}New Account{% endif %}</h1>
+    <hr/>
+
+    <form class="row" method="post">
+        {% csrf_token %}
+        <div class="row {% if form.name.errors %}invalid{% endif %}">
+            <div class="one third padded">
+                <label for="name">Name {% if form.name.errors %}<span class="error">{{ form.name.errors.0 }}</span>{% endif %}</label>
+                {{ form.name }}
+            </div>
+        </div>
+        <div class="row padded">
+            <button type="submit">Save new Account</button>
+        </div>
+    </form>
+</div>
+{% endblock content %}
+

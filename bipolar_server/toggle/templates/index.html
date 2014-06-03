@@ -1,0 +1,31 @@
+{% extends "base_logged.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="equalize row">
+        <div class="one half">
+            <h2>Accounts <a class="small" href="{% url "account_add" %}" title="Add new Account"><i class="icon-plus"></i></a></h2>
+
+            <ul id="userAccounts" class="list">
+                {% for user_account in user.accounts.all %}
+                <li><a href="{% url "account_view" user_account.account.shortcode %}">
+                        {{ user_account.account.name }} ( {{ user_account.account.shortcode }} )</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="one fourth padded">
+            <div class="box info">
+                <h3>Introduction</h3>
+            </div>
+        </div>
+
+        <div class="one fourth padded">
+            <div class="box question">
+                <h3>Documentation</h3>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+

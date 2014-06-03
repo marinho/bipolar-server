@@ -5,6 +5,7 @@ from models import Feature
 from models import Qualifier
 from models import QualifierPermission
 from models import Webhook
+from models import UserAccount
 
 
 class InlineAccountFeature(admin.TabularInline):
@@ -17,9 +18,14 @@ class InlineAccountWebhook(admin.TabularInline):
     extra = 0
 
 
+class InlineUserAccount(admin.TabularInline):
+    model = UserAccount
+    extra = 0
+
+
 class AdminAccount(admin.ModelAdmin):
     search_fields = ("name",)
-    inlines = [InlineAccountFeature, InlineAccountWebhook]
+    inlines = [InlineAccountFeature, InlineAccountWebhook, InlineUserAccount]
     list_display = ("name", "shortcode", "api_key")
 
 

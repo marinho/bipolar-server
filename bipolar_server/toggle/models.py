@@ -18,10 +18,16 @@ class Account(models.Model):
         return self.shortcode
 
     def save(self, *args, **kwargs):
+        # Shortcode generation
         if not self.shortcode:
-            self.shortcode = jellyfish.metaphone(self.name.upper().replace(" ", ""))[:4] +\
-                             str(random.randint(0, 9999)).zfill(4)
+            upper_name = self.name.upper().replace(" ", "")
+            shortcode = jellyfish.metaphone(upper_name)[:4]
+            if len(shortcode) < 4:
+                shortcode = upper_name[:4]
+            shortcode += str(random.randint(0, 99999999)).zfill(8)
+            self.shortcode = shortcode[:8]
 
+        # API key generation
         if not self.api_key:
             self.api_key = get_random_string(32)
 
@@ -30,8 +36,7 @@ class Account(models.Model):
     def format_all_permissions(self):
         data = {
             "account": self.shortcode,
-            "permissions": {
-                },
+            "permissions": {},
             }
         
         for qualifier in self.qualifiers.order_by("name"):
@@ -61,6 +66,24 @@ class Account(models.Model):
         return permissions
 
 
+class UserAccount(models.Model):
+    class Meta:
+        unique_together = (
+                ("user", "account"),
+                )
+
+    ROLE_OWNER = "owner"
+    ROLE_ADMIN = "admin"
+    ROLES = (
+        (ROLE_OWNER, "Owner"),
+        (ROLE_ADMIN, "Admin"),
+        )
+
+    user = models.ForeignKey("auth.User", related_name="accounts")
+    account = models.ForeignKey(Account, related_name="users")
+    role = models.CharField(max_length=10, default=ROLE_OWNER, choices=ROLES, db_index=True)
+
+
 class Feature(models.Model):
     class Meta:
         unique_together = (
@@ -83,9 +106,9 @@ class Feature(models.Model):
 
     EXP_NAME_VALIDATION = re.compile("^[a-zA-Z]+[\w_]*$")
 
+    creation = models.DateTimeField(auto_now_add=True, db_index=True)
     account = models.ForeignKey("Account", related_name="features")
     name = models.CharField(max_length=50)
-    creation = models.DateTimeField(auto_now_add=True, db_index=True)
     permission_type = models.CharField(
         max_length=10,
         default=TYPE_BOOLEAN,
@@ -105,7 +128,14 @@ class Feature(models.Model):
         return "%s / %s" % (self.account.shortcode, self.name)
 
     def save(self, *args, **kwargs):
-        self.name = self.name.lower()
+        self.name = self.name
+
+        # Clean fields
+        if self.permission_type == self.TYPE_BOOLEAN:
+            self.limit_permission = None
+        elif self.permission_type == self.TYPE_LIMIT:
+            self.boolean_permission = None
+
         return super(Feature, self).save(*args, **kwargs)
 
     def clean(self):
@@ -113,6 +143,12 @@ class Feature(models.Model):
         name_match = self.EXP_NAME_VALIDATION.match(self.name)
         if not name_match:
             raise ValidationError("Name must start with a letter and contain only letters, numbers and underscore.")
+
+    def permission_value(self):
+        if self.permission_type == self.TYPE_BOOLEAN:
+            return self.boolean_permission
+        elif self.permission_type == self.TYPE_LIMIT:
+            return self.limit_permission
 
 
 class Qualifier(models.Model):
@@ -129,7 +165,7 @@ class Qualifier(models.Model):
         return "%s / %s" % (self.account.shortcode, self.name)
 
     def save(self, *args, **kwargs):
-        self.name = self.name.lower()
+        self.name = self.name
         return super(Qualifier, self).save(*args, **kwargs)
 
     def get_feature_by_name(self, feature):
@@ -267,6 +303,9 @@ class Webhook(models.Model):
     param3 = models.CharField(max_length=100, blank=True) # i.e. Pusher Secret
     param4 = models.CharField(max_length=100, blank=True) # i.e. Pusher Channel
     param5 = models.CharField(max_length=100, blank=True) # i.e. Pusher Event
+
+    def __unicode__(self):
+        return self.get_type_display()
 
 
 # Signals

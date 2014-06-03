@@ -41,6 +41,7 @@ setup(
         "jellyfish",
         "django-tastypie",
         "requests",
+        "python-social-auth",
         #"pusher"
     ],
     scripts=['bipolar-manage',],
