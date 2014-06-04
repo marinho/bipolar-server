@@ -171,13 +171,7 @@ class Qualifier(models.Model):
     def generate_permissions(self):
         for feature in self.account.features.all():
             if self.permissions.filter(feature=feature).count() == 0:
-                if feature.permission_type == Feature.TYPE_BOOLEAN:
-                    value = False
-                elif feature.permission_type == Feature.TYPE_LIMIT:
-                    value = 0
-                else:
-                    value = None
-                self.set_permission(feature.name, value)
+                self.set_permission(feature.name, None)
 
     def get_feature_by_name(self, feature):
         # Get feature by name
@@ -200,13 +194,13 @@ class Qualifier(models.Model):
 
         # Valid arguments' values
         if feature.permission_type == Feature.TYPE_BOOLEAN:
-            if value not in (True, False):
+            if value not in (True, False, None):
                 raise TypeError("Boolean feature requires boolean value.")
             
             boolean = value
             limit = None
         elif feature.permission_type == Feature.TYPE_LIMIT:
-            if not isinstance(value, int):
+            if value is not None and not isinstance(value, int):
                 raise TypeError("Limit feature requires integer value.")
             
             boolean = None

@@ -46,7 +46,7 @@ class TestFeature(TestCase):
     def test_basic(self):
         feature = Feature.objects.create(
             account=self.account,
-            name="Crm_Business",
+            name="crm_business",
             )
         self.assertEqual(feature.name, "crm_business")
 
@@ -75,14 +75,14 @@ class TestQualifier(TestCase):
     def test_basic(self):
         qualifier = Qualifier.objects.create(
             account=self.account,
-            name="Master",
+            name="master",
             )
         self.assertEqual(qualifier.name, "master")
 
     def test_permissions(self):
         qualifier = Qualifier.objects.create(
             account=self.account,
-            name="Master",
+            name="master",
             )
 
         # Setting value permissions
@@ -156,25 +156,25 @@ class TestWebhook(TestCase):
         # New qualifier create
         qualifier = Qualifier.objects.create(
             account=self.account,
-            name="Master",
+            name="master",
             )
-        self.assertEqual(len(PusherWebhook._test["pool"]), 2)
+        self.assertEqual(len(PusherWebhook._test["pool"]), 3)
         self.assertEqual(PusherWebhook._test["pool"][-1]["permissions"], {u'master': {u'crm_business': False}})
 
         # Qualifier setting permission
         qualifier.set_permission("crm_business", True)
-        self.assertEqual(len(PusherWebhook._test["pool"]), 3)
+        self.assertEqual(len(PusherWebhook._test["pool"]), 4)
         self.assertEqual(PusherWebhook._test["pool"][-1]["permissions"], {u'master': {u'crm_business': True}})
 
         # ... updated and permission level "all" (instead of "per qualifier")
         feature1.permission_level = Feature.LEVEL_ALL
         feature1.save()
-        self.assertEqual(len(PusherWebhook._test["pool"]), 4)
+        self.assertEqual(len(PusherWebhook._test["pool"]), 5)
         self.assertEqual(PusherWebhook._test["pool"][-1]["permissions"], {u'master': {u'crm_business': False}})
 
         # ... deleted
         feature1.delete()
-        self.assertEqual(len(PusherWebhook._test["pool"]), 6) # Because of dependencies deletion
+        self.assertEqual(len(PusherWebhook._test["pool"]), 7) # Because of dependencies deletion
         self.assertEqual(PusherWebhook._test["pool"][-1]["permissions"], {u'master': {}})
 
         # New feature - testing level all permission value
@@ -183,13 +183,13 @@ class TestWebhook(TestCase):
             permission_type=Feature.TYPE_BOOLEAN,
             boolean_permission=True,
             )
-        self.assertEqual(len(PusherWebhook._test["pool"]), 7)
+        self.assertEqual(len(PusherWebhook._test["pool"]), 9)
         self.assertEqual(PusherWebhook._test["pool"][-1]["permissions"], {u'master': {u'crm_person': True}})
 
         # ... level "all" with permission value
         self.feature2.permission_level = Feature.LEVEL_ALL
         self.feature2.save()
-        self.assertEqual(len(PusherWebhook._test["pool"]), 8)
+        self.assertEqual(len(PusherWebhook._test["pool"]), 10)
         self.assertEqual(PusherWebhook._test["pool"][-1]["permissions"], {u'master': {u'crm_person': True}})
 
         # New feature - type limit
@@ -198,14 +198,14 @@ class TestWebhook(TestCase):
             permission_type=Feature.TYPE_LIMIT,
             limit_permission=10,
             )
-        self.assertEqual(len(PusherWebhook._test["pool"]), 9)
+        self.assertEqual(len(PusherWebhook._test["pool"]), 12)
         self.assertEqual(PusherWebhook._test["pool"][-1]["permissions"], {u'master': {
             u'crm_locations_limit': 10, 
             u'crm_person': True,
             }})
 
         qualifier.set_permission("crm_locations_limit", 5)
-        self.assertEqual(len(PusherWebhook._test["pool"]), 10)
+        self.assertEqual(len(PusherWebhook._test["pool"]), 13)
         self.assertEqual(PusherWebhook._test["pool"][-1]["permissions"], {u'master': {
             u'crm_locations_limit': 5, 
             u'crm_person': True,
@@ -235,7 +235,7 @@ class TestWebhook(TestCase):
             )
         qualifier = Qualifier.objects.create(
             account=self.account,
-            name="Master",
+            name="master",
             )
         self.assertEqual(responses.calls[0].request.url, "http://url.test/?arg1=123")
         self.assertEqual(json.loads(responses.calls[0].request.body), {
@@ -278,11 +278,11 @@ class TestApi(ResourceTestCase):
             )
         self.qualifier1 = Qualifier.objects.create(
             account=self.account,
-            name="Master",
+            name="master",
             )
         self.qualifier2 = Qualifier.objects.create(
             account=self.account,
-            name="Basic",
+            name="basic",
             )
 
     def tearDown(self):
@@ -309,7 +309,7 @@ class TestApi(ResourceTestCase):
     def test_features(self):
         # Add
         resp = self.api_client.post('/api/v1/feature/', format='json', data={
-            "name": "crm_EXPORT_CSV",
+            "name": "crm_export_csv",
             }, authentication=self.get_credentials())
         self.assertHttpCreated(resp)
         feature = Feature.objects.get(name="crm_export_csv")
@@ -349,7 +349,7 @@ class TestApi(ResourceTestCase):
     def test_qualifiers(self):
         # Add
         resp = self.api_client.post('/api/v1/qualifier/', format='json', data={
-            "name": "Premium",
+            "name": "premium",
             }, authentication=self.get_credentials())
         self.assertHttpCreated(resp)
         qualifier = Qualifier.objects.get(name="premium")
@@ -394,6 +394,7 @@ class TestApi(ResourceTestCase):
                     },
                 },
             }, authentication=self.get_credentials())
+
         self.assertHttpCreated(resp)
         self.assertEqual(json.loads(resp.content), {
             u'resource_uri': u'',
