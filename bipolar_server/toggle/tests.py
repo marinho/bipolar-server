@@ -8,6 +8,8 @@ from tastypie.test import ResourceTestCase
 
 from models import Account, Feature, Qualifier
 from webhooks import PusherWebhook, UrlWebhook
+from bipolar_server import context_processors
+from bipolar_server.version import version_number
 
 
 class TestAccount(TestCase):
@@ -22,6 +24,12 @@ class TestAccount(TestCase):
         self.assertEqual(len(account.shortcode), 8)
         self.assertEqual(len(account.api_key), 32)
         self.assertTrue(isinstance(account.creation, datetime))
+        self.assertEqual(str(account), account.shortcode)
+
+        # Shortcode with few letters
+        shortcode = account.make_shortcode("MA")
+        self.assertEqual(shortcode[:2], "MA")
+        self.assertTrue(shortcode[2:].isdigit())
 
 
 class TestFeature(TestCase):
@@ -49,6 +57,16 @@ class TestFeature(TestCase):
             name="crm_business",
             )
         self.assertEqual(feature.name, "crm_business")
+        self.assertEqual(str(feature), "%s / crm_business" % self.account.shortcode)
+
+    def test_limit(self):
+        feature = Feature.objects.create(
+            account=self.account,
+            name="crm_maximum_clients",
+            permission_type="limit",
+            limit_permission=30,
+            )
+        self.assertEqual(feature.permission_value(), 30)
 
 
 class TestQualifier(TestCase):
@@ -447,4 +465,25 @@ class TestApi(ResourceTestCase):
                     },
                 },
             })
+
+        # Permissions for qualifier that doesn't exist
+        resp = self.api_client.get('/api/v1/permissions/?qualifier=notFound', format='json',
+            authentication=self.get_credentials())
+        self.assertHttpOK(resp)
+        self.assertEqual(json.loads(resp.content), {
+            'permissions': {
+                'notFound': {
+                    'crm_business': False,
+                    'crm_person': False,
+                    'crm_locations_limit': 0,
+                    },
+                },
+            })
+
+
+class TestBasic(TestCase):
+    def test_context_processor(self):
+        ret = context_processors.toggle(None)
+
+        self.assertEqual(ret, {'BIPOLAR_VERSION': version_number})
 

@@ -17,15 +17,18 @@ class Account(models.Model):
     def __unicode__(self):
         return self.shortcode
 
+    def make_shortcode(self, name):
+        upper_name = name.upper().replace(" ", "")
+        shortcode = jellyfish.metaphone(upper_name)[:4]
+        if len(shortcode) < 4:
+            shortcode = upper_name[:4]
+        shortcode += str(random.randint(0, 99999999)).zfill(8)
+        return shortcode[:8]
+
     def save(self, *args, **kwargs):
         # Shortcode generation
         if not self.shortcode:
-            upper_name = self.name.upper().replace(" ", "")
-            shortcode = jellyfish.metaphone(upper_name)[:4]
-            if len(shortcode) < 4:
-                shortcode = upper_name[:4]
-            shortcode += str(random.randint(0, 99999999)).zfill(8)
-            self.shortcode = shortcode[:8]
+            self.shortcode = self.make_shortcode(self.name)
 
         # API key generation
         if not self.api_key:

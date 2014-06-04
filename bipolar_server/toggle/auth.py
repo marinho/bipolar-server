@@ -12,19 +12,22 @@ from social.backends.google import GooglePlusAuth
 from social.apps.django_app.utils import strategy
 
 
-def logout(request):
-    """Logs out user"""
-    auth_logout(request)
-    return render_to_response('auth/login.html', {}, RequestContext(request))
-
-
 def login(request):
     """Home view, displays login mechanism"""
     if request.user.is_authenticated():
         return redirect('profile')
-    return render_to_response('auth/login.html', {
+
+    params = {
         'plus_id': getattr(settings, 'SOCIAL_AUTH_GOOGLE_PLUS_KEY', None)
-    }, RequestContext(request))
+    }
+
+    return render_to_response('auth/login.html', params, RequestContext(request))
+
+
+def logout(request):
+    """Logs out user"""
+    auth_logout(request)
+    return render_to_response('auth/login.html', {}, RequestContext(request))
 
 
 @login_required
