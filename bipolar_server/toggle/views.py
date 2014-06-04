@@ -1,9 +1,12 @@
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
+from django.http import HttpResponseNotAllowed
+from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django import forms
+from django.views.decorators.csrf import csrf_exempt
 
 from models import Account
 from models import UserAccount
@@ -49,6 +52,20 @@ def account_add(request, shortcode=None):
 
 
 @login_required
+@csrf_exempt
+def account_delete(request, shortcode):
+    if request.method != "POST":
+        return HttpResponseNotAllowed()
+
+    user_account = get_object_or_404(request.user.accounts.all(),
+                                     account__shortcode=shortcode)
+
+    user_account.delete()
+
+    return HttpResponse(status=204)
+
+
+@login_required
 def feature_form(request, shortcode, feature_pk=None):
     user_account = get_object_or_404(request.user.accounts.all(),
                                      account__shortcode=shortcode)
@@ -72,6 +89,22 @@ def feature_form(request, shortcode, feature_pk=None):
         form = FeatureForm(instance=feature)
 
     return render(request, "feature_form.html", {"form": form, "feature": feature, "account": account})
+
+
+@login_required
+@csrf_exempt
+def feature_delete(request, shortcode, feature_pk):
+    if request.method != "POST":
+        return HttpResponseNotAllowed()
+
+    user_account = get_object_or_404(request.user.accounts.all(),
+                                     account__shortcode=shortcode)
+    account = user_account.account
+    feature = get_object_or_404(account.features.all(), pk=feature_pk)
+
+    feature.delete()
+
+    return HttpResponse(status=204)
 
 
 @login_required
@@ -99,6 +132,7 @@ def qualifier_form(request, shortcode, qualifier_pk=None):
         if form.is_valid() and permissions_formset.is_valid():
             qualifier = form.save(commit=False)
             qualifier.account = account
+            qualifier._no_auto_save_permissions = True
             qualifier.save()
 
             permissions = permissions_formset.save(commit=False)
@@ -128,6 +162,22 @@ def qualifier_form(request, shortcode, qualifier_pk=None):
 
 
 @login_required
+@csrf_exempt
+def qualifier_delete(request, shortcode, qualifier_pk):
+    if request.method != "POST":
+        return HttpResponseNotAllowed()
+
+    user_account = get_object_or_404(request.user.accounts.all(),
+                                     account__shortcode=shortcode)
+    account = user_account.account
+    qualifier = get_object_or_404(account.qualifiers.all(), pk=qualifier_pk)
+
+    qualifier.delete()
+
+    return HttpResponse(status=204)
+
+
+@login_required
 def webhook_form(request, shortcode, webhook_pk=None):
     user_account = get_object_or_404(request.user.accounts.all(),
                                      account__shortcode=shortcode)
@@ -150,4 +200,20 @@ def webhook_form(request, shortcode, webhook_pk=None):
         form = WebhookForm(instance=webhook)
 
     return render(request, "webhook_form.html", {"form": form, "webhook": webhook, "account": account})
+
+
+@login_required
+@csrf_exempt
+def webhook_delete(request, shortcode, webhook_pk):
+    if request.method != "POST":
+        return HttpResponseNotAllowed()
+
+    user_account = get_object_or_404(request.user.accounts.all(),
+                                     account__shortcode=shortcode)
+    account = user_account.account
+    webhook = get_object_or_404(account.webhooks.all(), pk=webhook_pk)
+
+    webhook.delete()
+
+    return HttpResponse(status=204)
 

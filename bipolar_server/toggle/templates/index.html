@@ -8,8 +8,11 @@
 
             <ul id="userAccounts" class="list">
                 {% for user_account in user.accounts.all %}
-                <li><a href="{% url "account_view" user_account.account.shortcode %}">
-                        {{ user_account.account.name }} ( {{ user_account.account.shortcode }} )</a></li>
+                <li id="account-{{ user_account.account.shortcode }}">
+                  <a href="{% url "account_view" user_account.account.shortcode %}">
+                     {{ user_account.account.name }} ( {{ user_account.account.shortcode }} )</a>
+                  <a href="javascript:removeAccount('{{ user_account.account.shortcode }}')"><i class="icon-remove icon-1x error"></i></a>
+                </li>
                 {% endfor %}
             </ul>
         </div>
@@ -29,3 +32,15 @@
 </div>
 {% endblock content %}
 
+{% block body_post_scripts %}
+<script>
+function removeAccount(shortcode){
+    if (!confirm("Are you sure?")) return
+
+    var url = "/accounts/" + shortcode + "/delete/";
+    $.post(url, function(resp){
+        $("#account-" + shortcode).remove();
+    });
+}
+</script>
+{% endblock body_post_scripts %}

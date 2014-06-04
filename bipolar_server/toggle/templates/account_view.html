@@ -16,15 +16,21 @@
                   <th>Type</th>
                   <th>Level</th>
                   <th>Value</th>
+                  <th>&nbsp;</th>
                 </tr>
               </thead>
               <tbody>
                 {% for feature in account.features.all %}
-                <tr>
+                <tr id="feature-{{feature.pk}}">
                   <td><a href="{% url "feature_edit" account.shortcode feature.pk %}">{{ feature.name }}</a></td>
                   <td>{{ feature.permission_type }}</td>
                   <td>{{ feature.permission_level }}</td>
                   <td>{{ feature.permission_value }}</td>
+                  <td class="align-right">
+                    <a href="javascript:removeFeature('{{ account.shortcode }}', {{ feature.pk }})">
+                      <i class="icon-remove icon-1x error"></i>
+                    </a>
+                  </td>
                 </tr>
                 {% endfor %}
               </tbody>
@@ -36,12 +42,20 @@
 
             <table>
               <thead>
-                <tr><th>Name</th></tr>
+                <tr>
+                  <th>Name</th>
+                  <th>&nbsp;</th>
+                </tr>
               </thead>
               <tbody>
                 {% for qualifier in account.qualifiers.all %}
-                <tr>
+                <tr id="qualifier-{{qualifier.pk}}">
                   <td><a href="{% url "qualifier_edit" account.shortcode qualifier.pk %}">{{ qualifier.name }}</a></td>
+                  <td class="align-right">
+                    <a href="javascript:removeQualifier('{{ account.shortcode }}', {{ qualifier.pk }})">
+                      <i class="icon-remove icon-1x error"></i>
+                    </a>
+                  </td>
                 </tr>
                 {% endfor %}
               </tbody>
@@ -53,12 +67,20 @@
 
             <table>
               <thead>
-                <tr><th>Name</th></tr>
+                <tr>
+                  <th>Name</th>
+                  <th>&nbsp;</th>
+                </tr>
               </thead>
               <tbody>
                 {% for webhook in account.webhooks.all %}
-                <tr>
+                <tr id="webhook-{{webhook.pk}}">
                   <td><a href="{% url "webhook_edit" account.shortcode webhook.pk %}">{{ webhook }}</a></td>
+                  <td class="align-right">
+                    <a href="javascript:removeWebhook('{{ account.shortcode }}', {{ webhook.pk }})">
+                      <i class="icon-remove icon-1x error"></i>
+                    </a>
+                  </td>
                 </tr>
                 {% endfor %}
               </tbody>
@@ -86,3 +108,33 @@
 </div>
 {% endblock content %}
 
+{% block body_post_scripts %}
+<script>
+function removeFeature(shortcode, featurePk){
+    if (!confirm("Are you sure?")) return
+
+    var url = "/accounts/" + shortcode + "/features/" + featurePk + "/delete/";
+    $.post(url, function(resp){
+        $("#feature-" + featurePk).remove();
+    });
+}
+
+function removeQualifier(shortcode, qualifierPk){
+    if (!confirm("Are you sure?")) return
+
+    var url = "/accounts/" + shortcode + "/qualifiers/" + qualifierPk + "/delete/";
+    $.post(url, function(resp){
+        $("#qualifier-" + qualifierPk).remove();
+    });
+}
+
+function removeWebhook(shortcode, webhookPk){
+    if (!confirm("Are you sure?")) return
+
+    var url = "/accounts/" + shortcode + "/webhooks/" + webhookPk + "/delete/";
+    $.post(url, function(resp){
+        $("#webhook-" + webhookPk).remove();
+    });
+}
+</script>
+{% endblock body_post_scripts %}

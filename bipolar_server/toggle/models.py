@@ -339,7 +339,8 @@ signals.post_delete.connect(send_webhook, sender=QualifierPermission)
 
 
 def qualifier_post_save(instance, sender, **kwargs):
-    instance.generate_permissions()
+    if not getattr(instance, "_no_auto_save_permissions", None):
+        instance.generate_permissions()
 signals.post_save.connect(qualifier_post_save, sender=Qualifier)
 
 
