@@ -82,7 +82,7 @@ Released at first for **T Dispatch** - https://tdispatch.com
 ### Functions
 
 - Update tests
-- setup.py is not 100% working
+- setup.py is not passing 100% - must be fixed and probably cover more
 - Django commands for server creation
 - Way to deploy with custom settings and static folder
 - User invitation
