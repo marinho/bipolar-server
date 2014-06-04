@@ -1,7 +1,11 @@
 from django import forms
+from django.forms.models import modelformset_factory
+
 from models import Account
 from models import Feature
 from models import Webhook
+from models import Qualifier
+from models import QualifierPermission
 
 
 class AccountForm(forms.ModelForm):
@@ -17,8 +21,22 @@ class FeatureForm(forms.ModelForm):
                   "limit_permission")
 
 
+class QualifierForm(forms.ModelForm):
+    class Meta:
+        model = Qualifier
+        fields = ("name",)
+
+
+QualifierPermissionFormSet = modelformset_factory(
+        QualifierPermission,
+        can_delete=False,
+        widgets={'feature': forms.HiddenInput()},
+        extra=0,
+        exclude=("qualifier",)
+        )
+
+
 class WebhookForm(forms.ModelForm):
     class Meta:
         model = Webhook
         fields = ("type", "is_active", "param1", "param2", "param3", "param4", "param5")
-

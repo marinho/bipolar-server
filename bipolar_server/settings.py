@@ -88,8 +88,12 @@ STATICFILES_DIRS = (
         os.path.join(PROJECT_DIR, "public", "static"),
         )
 
+# Bipolar settings
 from bipolar_server import version
 BIPOLAR_VERSION = version.version_number
+BIPOLAR_ALLOW_PUBLIC_USERS = True # TODO - this is to block new users registration from
+                                  # public site (forcing users to be registered from
+                                  # Admin or invited)
 
 TASTYPIE_DEFAULT_FORMATS = ['json']
 API_LIMIT_PER_PAGE = 10

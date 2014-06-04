@@ -1,0 +1,62 @@
+{% extends "base_logged.html" %}
+
+{% block content %}
+<div class="">
+    <h1><a href="{% url "account_view" account.shortcode %}" rel="prev">{{ account.shortcode }}</a> /
+        {% if feature %}{{ feature.name }}{% else %}New Qualifier{% endif %}</h1>
+    <hr/>
+
+    <form class="row" method="post">
+        {% csrf_token %}
+
+        <div class="row">
+            <div class="one half padded {% if form.name.errors %}invalid{% endif %}">
+                <label for="name">Name {% if form.name.errors %}<span class="error">{{ form.name.errors.0 }}</span>{% endif %}</label>
+                {{ form.name }}
+            </div>
+        </div>
+
+        {{ permissions_formset.management_form }}
+
+        <div class="row padded">
+            <table class="info">
+                <thead>
+                    <tr>
+                        <th class="three fifth padded">Feature</th>
+                        <th class="one fifth padded">Boolean</th>
+                        <th class="one fifth padded">Limit</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for permission_form in permissions_formset %}
+                    <tr>
+                        <td class="three fifth">
+                            {% if permission_form.instance.pk %}
+                                {{ permission_form.instance.feature.name }}
+                            {% else %}
+                                {{ permission_form.initial.feature.name }}
+                            {% endif %}
+                            {{ permission_form.feature }}
+                        </td>
+                        <td class="one fifth {% if permission_form.boolean_permission.errors %}invalid{% endif %}">
+                            {% if permission_form.boolean_permission.errors %}<label for="boolean_permission"><span class="error">{{ permission_form.boolean_permission.errors.0 }}</span></label>{% endif %}
+                            {{ permission_form.boolean_permission }}
+                        </td>
+                        <td class="one fifth {% if permission_form.limit_permission.errors %}invalid{% endif %}">
+                            {% if permission_form.limit_permission.errors %}<label for="limit_permission"><span class="error">{{ permission_form.limit_permission.errors.0 }}</span></label>{% endif %}
+                            {{ permission_form.limit_permission }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row padded">
+            <button type="submit">Save Feature</button>
+        </div>
+    </form>
+</div>
+{% endblock content %}
+

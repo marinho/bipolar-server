@@ -168,6 +168,17 @@ class Qualifier(models.Model):
         self.name = self.name
         return super(Qualifier, self).save(*args, **kwargs)
 
+    def generate_permissions(self):
+        for feature in self.account.features.all():
+            if self.permissions.filter(feature=feature).count() == 0:
+                if feature.permission_type == Feature.TYPE_BOOLEAN:
+                    value = False
+                elif feature.permission_type == Feature.TYPE_LIMIT:
+                    value = 0
+                else:
+                    value = None
+                self.set_permission(feature.name, value)
+
     def get_feature_by_name(self, feature):
         # Get feature by name
         if isinstance(feature, basestring):
@@ -326,3 +337,13 @@ signals.post_delete.connect(send_webhook, sender=Feature)
 signals.post_delete.connect(send_webhook, sender=Qualifier)
 signals.post_delete.connect(send_webhook, sender=QualifierPermission)
 
+
+def qualifier_post_save(instance, sender, **kwargs):
+    instance.generate_permissions()
+signals.post_save.connect(qualifier_post_save, sender=Qualifier)
+
+
+def feature_post_save(instance, sender, **kwargs):
+    for qualifier in instance.account.qualifiers.all():
+        qualifier.generate_permissions()
+signals.post_save.connect(feature_post_save, sender=Feature)

@@ -3,12 +3,16 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
+from django import forms
 
 from models import Account
 from models import UserAccount
+from models import QualifierPermission
 from forms import AccountForm
 from forms import FeatureForm
 from forms import WebhookForm
+from forms import QualifierForm
+from forms import QualifierPermissionFormSet
 
 
 @login_required
@@ -21,7 +25,6 @@ def account_view(request, shortcode):
     user_account = get_object_or_404(request.user.accounts.all(),
                                      account__shortcode=shortcode)
     account = user_account.account
-    #account = get_object_or_404(Account, shortcode=shortcode)
     return render(request, "account_view.html", {"account": account})
 
 
@@ -50,6 +53,7 @@ def feature_form(request, shortcode, feature_pk=None):
     user_account = get_object_or_404(request.user.accounts.all(),
                                      account__shortcode=shortcode)
     account = user_account.account
+
     if feature_pk:
         feature = get_object_or_404(account.features.all(), pk=feature_pk)
     else:
@@ -75,8 +79,52 @@ def qualifier_form(request, shortcode, qualifier_pk=None):
     user_account = get_object_or_404(request.user.accounts.all(),
                                      account__shortcode=shortcode)
     account = user_account.account
-    # TODO
-    return render(request, "qualifier_form.html")
+
+    if qualifier_pk:
+        qualifier = get_object_or_404(account.qualifiers.all(), pk=qualifier_pk)
+        permissions = qualifier.permissions.all()
+    else:
+        qualifier = None
+        permissions = [{
+            "feature": feature,
+            "boolean_permission": False,
+            "limit_permission": None,
+            } for feature in account.features.all()]
+
+    if request.method == "POST":
+        form = QualifierForm(request.POST, instance=qualifier)
+
+        permissions_formset = QualifierPermissionFormSet(request.POST, queryset=permissions)
+
+        if form.is_valid() and permissions_formset.is_valid():
+            qualifier = form.save(commit=False)
+            qualifier.account = account
+            qualifier.save()
+
+            permissions = permissions_formset.save(commit=False)
+            for permission in permissions:
+                permission.qualifier = qualifier
+                permission.save()
+
+            return HttpResponseRedirect(reverse("account_view", args=(shortcode,)))
+    else:
+        form = QualifierForm(instance=qualifier)
+
+        if qualifier_pk:
+            permissions_formset = QualifierPermissionFormSet(queryset=permissions)
+        else:
+            permissions_formset = QualifierPermissionFormSet(
+                    queryset=QualifierPermission.objects.none(),
+                    initial=permissions,
+                    )
+            permissions_formset.extra = len(permissions)
+
+    return render(request, "qualifier_form.html", {
+        "form": form,
+        "qualifier": qualifier,
+        "account": account,
+        "permissions_formset": permissions_formset,
+        })
 
 
 @login_required

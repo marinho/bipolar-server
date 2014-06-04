@@ -8,24 +8,25 @@
 
     <form class="row" method="post">
         {% csrf_token %}
-        <div class="row {% if form.name.errors %}invalid{% endif %}">
-            <div class="three seventh padded">
+
+        <div class="row">
+            <div class="three seventh padded {% if form.name.errors %}invalid{% endif %}">
                 <label for="name">Name {% if form.name.errors %}<span class="error">{{ form.name.errors.0 }}</span>{% endif %}</label>
                 {{ form.name }}
             </div>
-            <div class="one seventh padded">
+            <div class="one seventh padded {% if form.permission_level.errors %}invalid{% endif %}">
                 <label for="permission_level">Level {% if form.permission_level.errors %}<span class="error">{{ form.permission_level.errors.0 }}</span>{% endif %}</label>
                 {{ form.permission_level }}
             </div>
-            <div class="one seventh padded">
+            <div class="one seventh padded {% if form.permission_type.errors %}invalid{% endif %}">
                 <label for="permission_type">Type {% if form.permission_type.errors %}<span class="error">{{ form.permission_type.errors.0 }}</span>{% endif %}</label>
                 {{ form.permission_type }}
             </div>
-            <div class="one seventh padded">
+            <div class="one seventh padded {% if form.boolean_permission.errors %}invalid{% endif %}">
                 <label for="boolean_permission">Boolean {% if form.boolean_permission.errors %}<span class="error">{{ form.boolean_permission.errors.0 }}</span>{% endif %}</label>
                 {{ form.boolean_permission }}
             </div>
-            <div class="one seventh padded">
+            <div class="one seventh padded {% if form.limit_permission.errors %}invalid{% endif %}">
                 <label for="limit_permission">Limit {% if form.limit_permission.errors %}<span class="error">{{ form.limit_permission.errors.0 }}</span>{% endif %}</label>
                 {{ form.limit_permission }}
             </div>

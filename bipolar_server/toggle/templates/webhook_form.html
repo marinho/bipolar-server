@@ -8,6 +8,7 @@
 
     <form class="row" method="post">
         {% csrf_token %}
+
         <div class="row">
             <div class="one third padded {% if form.name.errors %}invalid{% endif %}">
                 <label for="name">Type {% if form.type.errors %}<span class="error">{{ form.type.errors.0 }}</span>{% endif %}</label>
