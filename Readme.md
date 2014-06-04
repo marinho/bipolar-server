@@ -66,7 +66,7 @@ Free and Open Source software based on **Gnu Public License v3**.
 
 **Marinho Brandao** <name at gmail.com>
 
-Releasd at first for **T Dispatch** - https://tdispatch.com
+Released at first for **T Dispatch** - https://tdispatch.com
 
 ## To do
 
@@ -81,6 +81,7 @@ Releasd at first for **T Dispatch** - https://tdispatch.com
 
 ### Functions
 
+- Update tests
 - setup.py is not 100% working
 - Django commands for server creation
 - Way to deploy with custom settings and static folder
