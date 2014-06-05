@@ -3,30 +3,39 @@
 {% block content %}
 <div class="row">
     <div class="equalize row">
-        <div class="one half">
+        <div class="two third">
             <h2>Accounts <a class="small" href="{% url "account_add" %}" title="Add new Account"><i class="icon-plus"></i></a></h2>
 
-            <ul id="userAccounts" class="list">
+            <div id="userAccounts" class="row">
                 {% for user_account in user.accounts.all %}
-                <li id="account-{{ user_account.account.shortcode }}">
-                  <a href="{% url "account_view" user_account.account.shortcode %}">
-                     {{ user_account.account.name }} ( {{ user_account.account.shortcode }} )</a>
-                  <a href="javascript:removeAccount('{{ user_account.account.shortcode }}')"><i class="icon-remove icon-1x error"></i></a>
-                </li>
+                <div id="account-{{ user_account.account.shortcode }}" class="box info gap-bottom">
+                    <a href="javascript:removeAccount('{{ user_account.account.shortcode }}')"
+                       class="button small"
+                       style="float:right">
+                        <i class="icon-remove"> Delete</i></a>
+
+                    <h4><a href="{% url "account_view" user_account.account.shortcode %}">
+                      {{ user_account.account.name }} ( {{ user_account.account.shortcode }} )</a></h4>
+
+                    <div class="row">
+                        <span class="one third">{{ user_account.account.features.count }} Feature(s)</span>
+                        <span class="one third">{{ user_account.account.qualifiers.count }} Qualifier(s)</span>
+                        <span class="one third">{{ user_account.account.webhooks.count }} Webhook(s)</span>
+                    </div>
+                </div>
                 {% endfor %}
-            </ul>
-        </div>
-
-        <div class="one fourth padded">
-            <div class="box info">
-                <h3>Introduction</h3>
             </div>
         </div>
 
-        <div class="one fourth padded">
-            <div class="box question">
-                <h3>Documentation</h3>
-            </div>
+        <div class="one twelfth padded"></div>
+
+        <div class="three twelfth padded box alert">
+            <h3>Documentation</h3>
+
+            <ol class="list padded">
+                <li class="alert"><a href="#" class="medium">Getting started</a></li>
+                <li class="alert"><a href="#" class="medium">Clients</a></li>
+            </ol>
         </div>
     </div>
 </div>

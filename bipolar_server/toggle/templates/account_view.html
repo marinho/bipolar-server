@@ -6,85 +6,91 @@
     <hr/>
 
     <div class="equalize row">
-        <div class="one half padded">
+        <div class="one half">
             <h2>Features <a class="small" href="{% url "feature_add" account.shortcode %}" title="Add new Feature"><i class="icon-plus"></i></a></h2>
 
-            <table>
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Type</th>
-                  <th>Level</th>
-                  <th>Value</th>
-                  <th>&nbsp;</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for feature in account.features.all %}
-                <tr id="feature-{{feature.pk}}">
-                  <td><a href="{% url "feature_edit" account.shortcode feature.pk %}">{{ feature.name }}</a></td>
-                  <td>{{ feature.permission_type }}</td>
-                  <td>{{ feature.permission_level }}</td>
-                  <td>{{ feature.permission_value }}</td>
-                  <td class="align-right">
-                    <a href="javascript:removeFeature('{{ account.shortcode }}', {{ feature.pk }})">
-                      <i class="icon-remove icon-1x error"></i>
-                    </a>
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+            <div class="gap-right">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Level</th>
+                      <th>Value</th>
+                      <th>&nbsp;</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for feature in account.features.all %}
+                    <tr id="feature-{{feature.pk}}">
+                      <td><a href="{% url "feature_edit" account.shortcode feature.pk %}">{{ feature.name }}</a></td>
+                      <td>{{ feature.permission_type }}</td>
+                      <td>{{ feature.permission_level }}</td>
+                      <td>{{ feature.permission_value }}</td>
+                      <td class="align-right">
+                        <a href="javascript:removeFeature('{{ account.shortcode }}', {{ feature.pk }})">
+                          <i class="icon-remove icon-1x error"></i>
+                        </a>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+            </div>
         </div>
 
-        <div class="one fourth padded">
+        <div class="one fourth">
             <h2>Qualifiers <a class="small" href="{% url "qualifier_add" account.shortcode %}" title="Add new Qualifier"><i class="icon-plus"></i></a></h2>
 
-            <table>
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>&nbsp;</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for qualifier in account.qualifiers.all %}
-                <tr id="qualifier-{{qualifier.pk}}">
-                  <td><a href="{% url "qualifier_edit" account.shortcode qualifier.pk %}">{{ qualifier.name }}</a></td>
-                  <td class="align-right">
-                    <a href="javascript:removeQualifier('{{ account.shortcode }}', {{ qualifier.pk }})">
-                      <i class="icon-remove icon-1x error"></i>
-                    </a>
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+            <div class="gap-right">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>&nbsp;</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for qualifier in account.qualifiers.all %}
+                    <tr id="qualifier-{{qualifier.pk}}">
+                      <td><a href="{% url "qualifier_edit" account.shortcode qualifier.pk %}">{{ qualifier.name }}</a></td>
+                      <td class="align-right">
+                        <a href="javascript:removeQualifier('{{ account.shortcode }}', {{ qualifier.pk }})">
+                          <i class="icon-remove icon-1x error"></i>
+                        </a>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+            </div>
         </div>
 
-        <div class="one fourth padded">
+        <div class="one fourth">
             <h2>WebHooks <a class="small" href="{% url "webhook_add" account.shortcode %}" title="Add new WebHook"><i class="icon-plus"></i></a></h2>
 
-            <table>
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>&nbsp;</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for webhook in account.webhooks.all %}
-                <tr id="webhook-{{webhook.pk}}">
-                  <td><a href="{% url "webhook_edit" account.shortcode webhook.pk %}">{{ webhook }}</a></td>
-                  <td class="align-right">
-                    <a href="javascript:removeWebhook('{{ account.shortcode }}', {{ webhook.pk }})">
-                      <i class="icon-remove icon-1x error"></i>
-                    </a>
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+            <div>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>&nbsp;</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for webhook in account.webhooks.all %}
+                    <tr id="webhook-{{webhook.pk}}">
+                      <td><a href="{% url "webhook_edit" account.shortcode webhook.pk %}">{{ webhook }}</a></td>
+                      <td class="align-right">
+                        <a href="javascript:removeWebhook('{{ account.shortcode }}', {{ webhook.pk }})">
+                          <i class="icon-remove icon-1x error"></i>
+                        </a>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
