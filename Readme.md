@@ -66,4 +66,28 @@ Free and Open Source software based on **Gnu Public License v3**.
 
 **Marinho Brandao** <name at gmail.com>
 
-Releasd at first for **T Dispatch** - https://tdispatch.com
+Released at first for **T Dispatch** - https://tdispatch.com
+
+## To do
+
+### Documentation
+
+- Getting started
+- Server installation
+- Preparing Features, Qualifiers and Webhooks
+- Using Bipolar
+- Clients
+- Examples
+
+### Functions
+
+- Update tests
+- setup.py is not passing 100% - must be fixed and probably cover more
+- Django commands for server creation
+- Way to deploy with custom settings and static folder
+- User invitation
+- Nice interface on home page
+- Go client
+- PHP client
+- Ruby client
+- JS client
