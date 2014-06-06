@@ -1,0 +1,65 @@
+.. Bipolar documentation master file, created by
+   sphinx-quickstart on Fri Jun  6 06:59:33 2014.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Overview
+========
+
+**Bipolar** is a feature toggle micro service, a bit similar to **django-gargoyle**,
+but with a deep difference: while django-gargoyle is mostly a tool to switch features
+state on Django-based projects, Bipolar is a micro service to be used remotely by any
+language or framework, backend, frontend or mobile.
+
+That turns Bipolar a better tool to use in micro-service based architectures,
+specially when there more than one language and framework in the whole system and
+different frontend approaches.
+
+Content
+-------
+
+.. toctree::
+    :maxdepth: 1
+
+    getting-started
+    installation
+    setup
+    authentication
+    api
+    clients
+    next-steps
+
+Dependencies
+------------
+
+Bipolar is written based on the following third party software:
+
+- Python 2.7
+- Django 1.6
+- django-tastypie
+- pusher
+- jellyfish
+- south
+- requests
+- responses
+
+License
+-------
+
+Free and Open Source software based on **Gnu Public License v3**.
+
+Author
+------
+
+**Marinho Brandao** <name at gmail.com>
+
+Released at first for **T Dispatch** - https://tdispatch.com
+
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+

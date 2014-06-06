@@ -1,0 +1,21 @@
+Clients
+=======
+
+Python Client
+-------------
+
+Still with poor documentation but well covered by tests and pretty simple for understanding.
+Just take a look at the tests and you must be ok.
+
+https://github.com/marinho/bipolar-python-client
+
+ember-features
+--------------
+
+This is not exactly a Bipolar client but it can be helpful to implement Feature Toggle in
+EmberJS based applications. To connect **ember-features** with **Bipolar Server** you must
+listen to a Pusher account via websocket and call **App.Features.update()**. Or you can
+publish your own URL that requests permissons to Bipolar Server and your JavaScript requests
+it via Ajax call.
+
+https://github.com/marinho/ember-features
