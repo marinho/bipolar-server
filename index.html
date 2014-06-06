@@ -1,50 +1,153 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
+    <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Bipolar by marinho</title>
-
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+    <title>Bipolar by marinho</title>
   </head>
+
   <body>
-    <div class="wrapper">
-      <header>
-        <h1>Bipolar</h1>
-        <p>Open source feature toggle system, based on Django</p>
+    <div id="container">
+      <div class="inner">
 
-        <p class="view"><a href="https://github.com/marinho/bipolar-server">View the Project on GitHub <small>marinho/bipolar-server</small></a></p>
+        <header>
+          <h1>Bipolar</h1>
+          <h2>Open source and language agnostic feature toggle system</h2>
+        </header>
 
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/marinho/bipolar-server/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/marinho/bipolar-server/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/marinho/bipolar-server" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
 
-        <ul>
-          <li><a href="https://github.com/marinho/bipolar-server/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/marinho/bipolar-server/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/marinho/bipolar-server">View On <strong>GitHub</strong></a></li>
-        </ul>
-      </header>
-      <section>
-        <h3>
-<a name="presentation" class="anchor" href="#presentation"><span class="octicon octicon-link"></span></a>Presentation</h3>
+        <hr>
 
-<p>This website is still in very baby stage. Just look our source code or read our documentation:</p>
+        <section id="main_content">
+          <h1>
+<a name="bipolar-feature-toggle-system" class="anchor" href="#bipolar-feature-toggle-system"><span class="octicon octicon-link"></span></a>Bipolar Feature Toggle System</h1>
+
+<p><a href="https://drone.io/github.com/TDispatch/bipolar/latest"><img src="https://drone.io/github.com/TDispatch/bipolar/status.png" alt="Build Status"></a></p>
+
+<h2>
+<a name="overview" class="anchor" href="#overview"><span class="octicon octicon-link"></span></a>Overview</h2>
+
+<p><strong>Bipolar</strong> is a feature toggle micro service, a bit similar to <strong>django-gargoyle</strong>,
+but with a deep difference: while django-gargoyle is a tool to switch features
+on Django-based projects, Bipolar is a web service with an API with ability to
+be used remotely by any language and framework.</p>
+
+<p>That turns Bipolar a better tool to use in micro-service based architectures,
+specially when there more than one language and framework in the whole system
+and different frontend approaches.</p>
+
+<h2>
+<a name="entities" class="anchor" href="#entities"><span class="octicon octicon-link"></span></a>Entities</h2>
+
+<h3>
+<a name="account" class="anchor" href="#account"><span class="octicon octicon-link"></span></a>Account</h3>
+
+<p>An account contains the other elements, with a shortcode and API key to be used for
+authentation. That is very useful for a system with multiple services to serve.</p>
+
+<h3>
+<a name="feature" class="anchor" href="#feature"><span class="octicon octicon-link"></span></a>Feature</h3>
+
+<p>Each <strong>feature</strong> can be named or structured by the developer taste, as long as it
+keeps a unique small-letters name for each account.</p>
+
+<p>If a system has more than one place to enable or disable the same functionality
+(e.g. business functions in a CRM), the functionality will be a single <strong>Feature</strong>
+which is checked by more than one place in the code (can be different systems,
+servers, languages, no matters).</p>
+
+<h3>
+<a name="qualifier" class="anchor" href="#qualifier"><span class="octicon octicon-link"></span></a>Qualifier</h3>
+
+<p>A <strong>qualifier</strong> is useful to set different permissions for the same features in an
+account. A good example for it is when you have different <strong>account types</strong> in your
+service (i.e. free and paying accounts), so, each account type is able to see the
+features in different ways.</p>
+
+<h3>
+<a name="webhook" class="anchor" href="#webhook"><span class="octicon octicon-link"></span></a>Webhook</h3>
+
+<p>A <strong>webhook</strong> is and end point setup to receive the current account''s permissions
+when something is updated (i.e. a new feature, a new qualifier, a permission is set
+or unset, etc.)</p>
+
+<p>Right now Bipolar supports only Pusher and raw post URLs.</p>
+
+<h2>
+<a name="software" class="anchor" href="#software"><span class="octicon octicon-link"></span></a>Software</h2>
+
+<p>Bipolar is written based on the following third party software:</p>
 
 <ul>
-    <li><a href="https://github.com/marinho/bipolar-server">Source Code</a></li>
-    <li><a href="docs/index.html">Documentation</a></li>
-</ul>
+<li>Python 2.7</li>
+<li>Django 1.6</li>
+<li>django-tastypie</li>
+<li>pusher</li>
+<li>jellyfish</li>
+<li>south</li>
+<li>requests</li>
+<li>responses</li>
+</ul><h2>
+<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h2>
 
-      </section>
-      <footer>
-        <p>This project is maintained by <a href="https://github.com/marinho">marinho</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
-      </footer>
+<p>Free and Open Source software based on <strong>Gnu Public License v3</strong>.</p>
+
+<h2>
+<a name="author" class="anchor" href="#author"><span class="octicon octicon-link"></span></a>Author</h2>
+
+<p><strong>Marinho Brandao</strong> </p>
+
+<p>Released at first for <strong>T Dispatch</strong> - <a href="https://tdispatch.com">https://tdispatch.com</a></p>
+
+<h2>
+<a name="to-do" class="anchor" href="#to-do"><span class="octicon octicon-link"></span></a>To do</h2>
+
+<h3>
+<a name="documentation" class="anchor" href="#documentation"><span class="octicon octicon-link"></span></a>Documentation</h3>
+
+<ul>
+<li>Getting started</li>
+<li>Server installation</li>
+<li>Preparing Features, Qualifiers and Webhooks</li>
+<li>Using Bipolar</li>
+<li>Clients</li>
+<li>Examples</li>
+</ul><h3>
+<a name="functions" class="anchor" href="#functions"><span class="octicon octicon-link"></span></a>Functions</h3>
+
+<ul>
+<li>Update tests</li>
+<li>setup.py is not passing 100% - must be fixed and probably cover more</li>
+<li>Django commands for server creation</li>
+<li>Way to deploy with custom settings and static folder</li>
+<li>User invitation</li>
+<li>Nice interface on home page</li>
+<li>Go client</li>
+<li>PHP client</li>
+<li>Ruby client</li>
+<li>JS client</li>
+</ul>
+        </section>
+
+        <footer>
+          Bipolar is maintained by <a href="https://github.com/marinho">marinho</a><br>
+          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
+
+        
+      </div>
     </div>
-    <script src="javascripts/scale.fix.js"></script>
-    
   </body>
 </html>
