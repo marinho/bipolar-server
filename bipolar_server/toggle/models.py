@@ -226,6 +226,20 @@ class Qualifier(models.Model):
 
         return permission
 
+    def get_permission_value_only_if_set(self, feature):
+        # Get feature
+        feature = self.get_feature_by_name(feature)
+
+        try:
+            permission = self.permissions.get(feature=feature)
+
+            if feature.permission_type == Feature.TYPE_BOOLEAN:
+                return permission.boolean_permission
+            elif feature.permission_type == Feature.TYPE_LIMIT:
+                return permission.limit_permission
+        except QualifierPermission.DoesNotExist:
+            pass
+
     def get_permission_value(self, feature):
         # Get feature
         feature = self.get_feature_by_name(feature)

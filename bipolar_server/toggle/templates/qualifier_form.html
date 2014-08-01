@@ -16,36 +16,34 @@
             </div>
         </div>
 
-        {{ permissions_formset.management_form }}
-
         <div class="row padded">
             <table class="info">
                 <thead>
                     <tr>
-                        <th class="three fifth padded">Feature</th>
-                        <th class="one fifth padded">Boolean</th>
-                        <th class="one fifth padded">Limit</th>
+                        <th class="four fifth padded">Feature</th>
+                        <th class="one fifth padded">Permission</th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    {% for permission_form in permissions_formset %}
+                    {% for permission in permissions %}
                     <tr>
-                        <td class="three fifth">
-                            {% if permission_form.instance.pk %}
-                                {{ permission_form.instance.feature.name }}
+                        <td class="four fifth">
+                            {{ permission.feature.name }}
+                        </td>
+                        <td class="one fifth">
+                            {% if permission.feature.permission_type == "boolean" %}
+                            <select name="permission-{{permission.feature.pk}}" class="permissionBooleanValue" {% if not permission.is_set %}style="display:none"{% endif %}>
+                                <option value="" {% if permission.permission_value == None %}selected="selected"{% endif %}>Default</option>
+                                <option value="true" {% if permission.permission_value == True %}selected="selected"{% endif %}>Yes</option>
+                                <option value="false" {% if permission.permission_value == False %}selected="selected"{% endif %}>No</option>
+                            </select>
                             {% else %}
-                                {{ permission_form.initial.feature.name }}
+                            <input name="permission-{{permission.feature.pk}}" class="permissionLimitValue" value="{{ permission.permission_value }}"
+                            type="number" {% if not permission.is_set %}style="display:none"{% endif %}>
                             {% endif %}
-                            {{ permission_form.feature }}
-                        </td>
-                        <td class="one fifth {% if permission_form.boolean_permission.errors %}invalid{% endif %}">
-                            {% if permission_form.boolean_permission.errors %}<label for="boolean_permission"><span class="error">{{ permission_form.boolean_permission.errors.0 }}</span></label>{% endif %}
-                            {{ permission_form.boolean_permission }}
-                        </td>
-                        <td class="one fifth {% if permission_form.limit_permission.errors %}invalid{% endif %}">
-                            {% if permission_form.limit_permission.errors %}<label for="limit_permission"><span class="error">{{ permission_form.limit_permission.errors.0 }}</span></label>{% endif %}
-                            {{ permission_form.limit_permission }}
+
+                            <a href="javascript:void(0)" class="changeFromDefault" {% if permission.is_set %}style="display:none"{% endif %}>Default</a>
                         </td>
                     </tr>
                     {% endfor %}
@@ -59,4 +57,24 @@
     </form>
 </div>
 {% endblock content %}
+
+{% block body_post_scripts %}{{ block.super }}
+<script>
+$(document).ready(function(){
+    // Shows input for changing value from Default
+    $(".changeFromDefault").click(function(){
+        $(this).hide();
+        $(this).parent().find("input, select").show();
+    });
+
+    // When leaving the field, if empty, shows link instead
+    $(".permissionBooleanValue, .permissionLimitValue").change(function(){
+        if (!$(this).val()) {
+            $(this).hide();
+            $(this).parent().find(".changeFromDefault").show();
+        }
+    });
+});
+</script>
+{% endblock %}
 

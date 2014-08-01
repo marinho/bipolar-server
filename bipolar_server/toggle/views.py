@@ -11,11 +11,11 @@ from django.views.decorators.csrf import csrf_exempt
 from models import Account
 from models import UserAccount
 from models import QualifierPermission
+from models import Feature
 from forms import AccountForm
 from forms import FeatureForm
 from forms import WebhookForm
 from forms import QualifierForm
-from forms import QualifierPermissionFormSet
 
 
 @login_required
@@ -127,37 +127,47 @@ def qualifier_form(request, shortcode, qualifier_pk=None):
     if request.method == "POST":
         form = QualifierForm(request.POST, instance=qualifier)
 
-        permissions_formset = QualifierPermissionFormSet(request.POST, queryset=permissions)
+        form_is_valid = form.is_valid()
 
-        if form.is_valid() and permissions_formset.is_valid():
+        if form_is_valid:
             qualifier = form.save(commit=False)
             qualifier.account = account
             qualifier._no_auto_save_permissions = True
             qualifier.save()
 
-            permissions = permissions_formset.save(commit=False)
-            for permission in permissions:
-                permission.qualifier = qualifier
-                permission.save()
+            # Save permissions
+            for k in request.POST.keys():
+                if k.startswith("permission-"):
+                    value = request.POST[k]
+                    feature_id = int(k.split("-")[-1])
+                    feature = account.features.get(id=feature_id)
+                    if feature.permission_type == Feature.TYPE_BOOLEAN:
+                        value = {"": None, "true": True, "false": False}[value]
+                    elif feature.permission_type == Feature.TYPE_LIMIT:
+                        value = int(value) if value else None
+                    qualifier.set_permission(feature.name, value)
 
             return HttpResponseRedirect(reverse("account_view", args=(shortcode,)))
     else:
         form = QualifierForm(instance=qualifier)
-
-        if qualifier_pk:
-            permissions_formset = QualifierPermissionFormSet(queryset=permissions)
-        else:
-            permissions_formset = QualifierPermissionFormSet(
-                    queryset=QualifierPermission.objects.none(),
-                    initial=permissions,
-                    )
-            permissions_formset.extra = len(permissions)
+        permissions = []
+        for feature in account.features.order_by("name"):
+            if qualifier:
+                permission_value = qualifier.get_permission_value_only_if_set(feature.name)
+            else:
+                permission_value = None
+            permissions.append({
+                "feature": feature,
+                "permission_value": permission_value,
+                "is_set": permission_value is not None,
+                })
 
     return render(request, "qualifier_form.html", {
         "form": form,
         "qualifier": qualifier,
         "account": account,
-        "permissions_formset": permissions_formset,
+        "permissions": permissions,
+        #"permissions_formset": permissions_formset,
         })
 
 

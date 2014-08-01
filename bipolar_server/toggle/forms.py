@@ -27,15 +27,6 @@ class QualifierForm(forms.ModelForm):
         fields = ("name",)
 
 
-QualifierPermissionFormSet = modelformset_factory(
-        QualifierPermission,
-        can_delete=False,
-        widgets={'feature': forms.HiddenInput()},
-        extra=0,
-        exclude=("qualifier",)
-        )
-
-
 class WebhookForm(forms.ModelForm):
     class Meta:
         model = Webhook
