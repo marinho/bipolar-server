@@ -9,6 +9,9 @@ from webhooks import send_to_webhook
 
 
 class Account(models.Model):
+    class Meta:
+        ordering = ("name",)
+
     name = models.CharField(max_length=50)
     creation = models.DateTimeField(auto_now_add=True, db_index=True)
     shortcode = models.CharField(max_length=8, unique=True, blank=True)
@@ -92,6 +95,7 @@ class Feature(models.Model):
         unique_together = (
             ("account", "name"),
             )
+        ordering = ("name",)
 
     TYPE_BOOLEAN = "boolean"
     TYPE_LIMIT = "limit"
@@ -159,6 +163,7 @@ class Qualifier(models.Model):
         unique_together = (
             ("account", "name"),
             )
+        ordering = ("name",)
 
     account = models.ForeignKey("Account", related_name="qualifiers")
     name = models.CharField(max_length=50)
@@ -310,6 +315,9 @@ class QualifierPermission(models.Model):
 
 
 class Webhook(models.Model):
+    class Meta:
+        ordering = ("is_active", "type",)
+
     TYPE_PUSHER = "pusher"
     TYPE_URL = "url"
     TYPES = (
