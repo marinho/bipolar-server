@@ -1,0 +1,14 @@
+.tt-dropdown-menu {
+    border: 1px solid silver;
+    background: white;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.tt-dropdown-menu .tt-suggestion {
+    padding: 5px;
+}
+
+.tt-dropdown-menu .tt-suggestion:hover {
+    background: #cceeaa;
+}

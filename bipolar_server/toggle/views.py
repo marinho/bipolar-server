@@ -1,3 +1,5 @@
+import json
+
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
@@ -7,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django import forms
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import User
 
 from models import Account
 from models import UserAccount
@@ -55,7 +58,7 @@ def account_add(request, shortcode=None):
 @csrf_exempt
 def account_delete(request, shortcode):
     if request.method != "POST":
-        return HttpResponseNotAllowed()
+        return HttpResponseNotAllowed("")
 
     user_account = get_object_or_404(request.user.accounts.all(),
                                      account__shortcode=shortcode)
@@ -95,7 +98,7 @@ def feature_form(request, shortcode, feature_pk=None):
 @csrf_exempt
 def feature_delete(request, shortcode, feature_pk):
     if request.method != "POST":
-        return HttpResponseNotAllowed()
+        return HttpResponseNotAllowed("")
 
     user_account = get_object_or_404(request.user.accounts.all(),
                                      account__shortcode=shortcode)
@@ -175,7 +178,7 @@ def qualifier_form(request, shortcode, qualifier_pk=None):
 @csrf_exempt
 def qualifier_delete(request, shortcode, qualifier_pk):
     if request.method != "POST":
-        return HttpResponseNotAllowed()
+        return HttpResponseNotAllowed("")
 
     user_account = get_object_or_404(request.user.accounts.all(),
                                      account__shortcode=shortcode)
@@ -216,7 +219,7 @@ def webhook_form(request, shortcode, webhook_pk=None):
 @csrf_exempt
 def webhook_delete(request, shortcode, webhook_pk):
     if request.method != "POST":
-        return HttpResponseNotAllowed()
+        return HttpResponseNotAllowed("")
 
     user_account = get_object_or_404(request.user.accounts.all(),
                                      account__shortcode=shortcode)
@@ -224,6 +227,64 @@ def webhook_delete(request, shortcode, webhook_pk):
     webhook = get_object_or_404(account.webhooks.all(), pk=webhook_pk)
 
     webhook.delete()
+
+    return HttpResponse(status=204)
+
+
+@login_required
+def search_users(request):
+    q = request.GET.get("q", "").strip()
+    if not q:
+        return HttpResponse(json.dumps({"users": []}), content_type="application/json")
+
+    users = User.objects.filter(is_active=True).order_by("username")
+    users = users.filter(username__icontains=q) |\
+            users.filter(email__icontains=q)
+    users = users[:50]
+
+    return HttpResponse(json.dumps({"users": [{
+        "id": user.id,
+        "username": user.username,
+        } for user in users]}), content_type="application/json")
+
+
+@login_required
+@csrf_exempt
+def user_add(request, shortcode, user_pk):
+    if request.method != "POST":
+        return HttpResponseNotAllowed("")
+
+    user_account = get_object_or_404(request.user.accounts.all(),
+                                     account__shortcode=shortcode)
+    account = user_account.account
+    user = get_object_or_404(User.objects.all(), pk=user_pk)
+
+    account_user, new = account.users.get_or_create(
+            user=user,
+            defaults={
+                "role": "admin",
+                }
+            )
+
+    return HttpResponse(json.dumps({"accountUser": {
+        "id": user.id,
+        "username": user.username,
+        "role": account_user.role
+        }
+    }), content_type="application/json")
+
+
+@login_required
+@csrf_exempt
+def user_delete(request, shortcode, user_pk):
+    if request.method != "POST":
+        return HttpResponseNotAllowed("")
+
+    user_account = get_object_or_404(request.user.accounts.all(),
+                                     account__shortcode=shortcode)
+    account = user_account.account
+    account_user = get_object_or_404(account.users, user__id=user_pk)
+    account_user.delete()
 
     return HttpResponse(status=204)
 

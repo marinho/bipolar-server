@@ -9,6 +9,7 @@
         <div class="one half">
             <h2>Features <a class="small" href="{% url "feature_add" account.shortcode %}" title="Add new Feature"><i class="icon-plus"></i></a></h2>
 
+            {% if account.features.count %}
             <div class="gap-right">
                 <table>
                   <thead>
@@ -37,19 +38,17 @@
                   </tbody>
                 </table>
             </div>
+            {% else %}
+            <p class="alert box gap-right">No features were added yet</p>
+            {% endif %}
         </div>
 
         <div class="one fourth">
             <h2>Qualifiers <a class="small" href="{% url "qualifier_add" account.shortcode %}" title="Add new Qualifier"><i class="icon-plus"></i></a></h2>
 
+            {% if account.qualifiers.count %}
             <div class="gap-right">
                 <table>
-                  <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>&nbsp;</th>
-                    </tr>
-                  </thead>
                   <tbody>
                     {% for qualifier in account.qualifiers.all %}
                     <tr id="qualifier-{{qualifier.pk}}">
@@ -64,19 +63,17 @@
                   </tbody>
                 </table>
             </div>
+            {% else %}
+            <p class="alert box gap-right">No qualifiers were added yet</p>
+            {% endif %}
         </div>
 
         <div class="one fourth">
             <h2>WebHooks <a class="small" href="{% url "webhook_add" account.shortcode %}" title="Add new WebHook"><i class="icon-plus"></i></a></h2>
 
+            {% if account.webhooks.count %}
             <div>
                 <table>
-                  <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>&nbsp;</th>
-                    </tr>
-                  </thead>
                   <tbody>
                     {% for webhook in account.webhooks.all %}
                     <tr id="webhook-{{webhook.pk}}">
@@ -91,25 +88,66 @@
                   </tbody>
                 </table>
             </div>
+            {% else %}
+            <p class="alert box gap-right">No webhooks were added yet</p>
+            {% endif %}
         </div>
     </div>
 
     <hr/>
 
     <div class="row padded">
-        <h2>Settings</h2>
+        <div class="three fourth">
+            <div class="gap-right">
+                <h2>Settings</h2>
 
-        <p class="box success">
-            Shortcode: <b>{{ account.shortcode }}</b><br/>
-            API Key: <b>{{ account.api_key }}</b>
-        </p>
-
-        <div class="row">
-            <p class="fourth align-center"><a href="//bipolar-server.readthedocs.org/en/latest/getting-started.html" target="_blank">Getting started</a></p>
-            <p class="fourth align-center"><a href="//bipolar-server.readthedocs.org/en/latest/clients.html" target="_blank">Clients</a></p>
-            <p class="fourth align-center"><a href="//bipolar-server.readthedocs.org/en/latest/" target="_blank">Documentation</a></p>
-            <p class="fourth align-center"><a href="//github.com/marinho/bipolar-server" target="_blank" title="@bipolar-server">GitHub</a></p>
+                <p class="box success">
+                    Shortcode: <b>{{ account.shortcode }}</b><br/>
+                    API Key: <b>{{ account.api_key }}</b>
+                </p>
+            </div>
         </div>
+
+        <div class="one fourth">
+            <h2>Users</h2>
+
+            {% if account.users.count %}
+            <div>
+                <table id="accountUsers">
+                  <tbody>
+                    {% for account_user in account.users.all %}
+                    <tr id="accountUser-{{account_user.user.pk}}" class="accountUser">
+                      <td>{{ account_user.user.username }}</td>
+                      <td>{{ account_user.role }}</td>
+                      <td class="align-right">
+                        {% if account_user.user != user %}
+                        <a href="javascript:removeUser('{{ account.shortcode }}', {{ account_user.user.pk }})">
+                          <i class="icon-remove icon-1x error"></i>
+                        </a>
+                        {% endif %}
+                      </td>
+                    </tr>
+                    {% endfor %}
+
+                    <tr id="addUser">
+                      <td colspan="3">
+                        <input class="typeahead" type="text" placeholder="search for username">
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="alert box gap-right">No users were added yet</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row">
+        <p class="fourth align-center"><a href="//bipolar-server.readthedocs.org/en/latest/getting-started.html" target="_blank">Getting started</a></p>
+        <p class="fourth align-center"><a href="//bipolar-server.readthedocs.org/en/latest/clients.html" target="_blank">Clients</a></p>
+        <p class="fourth align-center"><a href="//bipolar-server.readthedocs.org/en/latest/" target="_blank">Documentation</a></p>
+        <p class="fourth align-center"><a href="//github.com/marinho/bipolar-server" target="_blank" title="@bipolar-server">GitHub</a></p>
     </div>
 </div>
 {% endblock content %}
@@ -142,5 +180,46 @@ function removeWebhook(shortcode, webhookPk){
         $("#webhook-" + webhookPk).remove();
     });
 }
+
+function removeUser(shortcode, userPk){
+    if (!confirm("Are you sure?")) return
+
+    var url = "/accounts/" + shortcode + "/users/" + userPk + "/delete/";
+    $.post(url, function(resp){
+        $("#accountUser-" + userPk).remove();
+    });
+}
+
+ACCOUNT_SHORTCODE = "{{ account.shortcode }}";
+
+$(document).ready(function(){
+    $('#addUser .typeahead').typeahead({
+        hint: true,
+        highlight: true,
+        minLength: 1
+      },
+      {
+        name: 'users',
+        displayKey: 'username',
+        source: function(q, cb){
+            $.get("/search-users.json?q="+q, function(resp){
+                cb(resp.users);
+            });
+        }
+      });
+    });
+    $('#addUser .typeahead').bind('typeahead:selected', function(e, obj, name) {
+        $.post("/accounts/" + ACCOUNT_SHORTCODE + "/users/" + obj.id + "/", function(resp){
+            $('#addUser .typeahead').val("");
+            if ($("#accountUsers #accountUser-" + obj.id).length == 0) {
+                var tr = $('<tr class="accountUser" id="accountUser-'+obj.id+'"></tr>');
+                tr.append('<td>'+resp.accountUser.username+'</td>');
+                tr.append('<td>'+resp.accountUser.role+'</td>');
+                var td3 = tr.append('<td class="align-right"></td>');
+                td3.append('<a href="javascript:removeUser(\''+ACCOUNT_SHORTCODE+'\', '+obj.id+')"><i class="icon-remove icon-1x error"></i></a>');
+                tr.insertBefore("#accountUsers #addUser");
+            }
+        });
+    });
 </script>
 {% endblock body_post_scripts %}
