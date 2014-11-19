@@ -63,7 +63,7 @@ class FeatureResource(AccountBasedResource):
         filtering = {
             "name": ALL,
             }
-        allowed_methods = ['get', 'post', 'put', 'delete']
+        allowed_methods = ['get', 'post', 'patch', 'delete']
         authentication = AccountAuthentication()
         authorization = Authorization()
         always_return_data = True
@@ -87,7 +87,7 @@ class QualifierResource(AccountBasedResource):
         filtering = {
             "name": ALL,
             }
-        allowed_methods = ['get', 'post', 'put', 'delete']
+        allowed_methods = ['get', 'post', 'patch', 'delete']
         authentication = AccountAuthentication()
         authorization = Authorization()
         always_return_data = True
